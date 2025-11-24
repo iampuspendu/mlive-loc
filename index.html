@@ -6,7 +6,10 @@
   <title>Public Safety System – Mobile</title>
 
   <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
 
   <style>
     :root {
@@ -17,15 +20,14 @@
       --accent:#2563eb;
       --danger:#ef4444;
       --success:#22c55e;
+      --shadow:0 22px 45px rgba(0,0,0,0.55);
     }
 
-    * { 
-      box-sizing:border-box; 
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing:border-box; }
 
     body {
+      margin:0;
+      padding:0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:#020617;
       color:var(--card-soft);
@@ -33,456 +35,601 @@
       overflow: hidden;
     }
 
-    /* MAIN CARD (full screen) */
+    /* MAIN CARD (full screen mobile UI) */
     .mobile-card {
       background:#111827;
       height: 100vh;
       display: flex;
       flex-direction: column;
-      position: relative;
+      position:relative;
+      overflow:hidden;
     }
 
     /* HEADER */
     .mc-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
       padding: 12px 16px 8px;
       flex-shrink: 0;
     }
 
     .mc-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #e5e7eb;
+      font-size:16px;
+      font-weight:600;
+      color:#e5e7eb;
     }
 
     .mc-toolbar {
-      display: flex;
-      gap: 8px;
-      align-items: center;
+      display:flex;
+      gap:8px;
+      align-items:center;
     }
 
     .chip {
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 11px;
-      border: 1px solid rgba(148,163,184,0.35);
-      color: #e5e7eb;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:11px;
+      border:1px solid rgba(148,163,184,0.35);
+      color:#e5e7eb;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .chip-icon {
+      font-size:11px;
     }
 
     .toolbar-btn {
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      color: #e5e7eb;
-      background: rgba(15,23,42,0.7);
-      cursor: pointer;
+      width:26px;
+      height:26px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.5);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:13px;
+      color:#e5e7eb;
+      background:rgba(15,23,42,0.7);
+      cursor:pointer;
+    }
+
+    .toolbar-btn:active {
+      transform:scale(0.96);
     }
 
     /* DEVICE ROW */
     .device-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
       padding: 0 16px 8px;
       flex-shrink: 0;
     }
 
     .device-main {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+      display:flex;
+      flex-direction:column;
+      gap:2px;
     }
 
     .device-id {
-      font-size: 14px;
-      font-weight: 600;
+      font-size:14px;
+      font-weight:600;
     }
 
     .device-sub {
-      font-size: 12px;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      gap:6px;
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--danger);
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:var(--danger);
     }
 
     .status-dot.online {
-      background: var(--success);
+      background:var(--success);
     }
 
     .battery-pill {
-      padding: 4px 9px;
-      border-radius: 999px;
-      background: #020617;
-      border: 1px solid rgba(148,163,184,0.4);
-      font-size: 11px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: #e5e7eb;
+      padding:4px 9px;
+      border-radius:999px;
+      background:#020617;
+      border:1px solid rgba(148,163,184,0.4);
+      font-size:11px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      color:#e5e7eb;
     }
 
-    /* MAP AREA */
+    /* MAP CARD */
     .map-shell {
-      flex: 1;
+      flex-grow: 1;
       margin: 0 8px;
-      border-radius: 14px;
-      background: #f3f4f6;
-      padding: 8px;
-      position: relative;
+      border-radius:14px;
+      background:#f3f4f6;
+      padding:8px;
+      position:relative;
+      overflow:hidden;
       display: flex;
       flex-direction: column;
-      min-height: 0; /* Important for flex child */
     }
 
     .map-header-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-      font-size: 11px;
-      color: #4b5563;
-      font-weight: 600;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:6px;
+      font-size:11px;
+      color:#4b5563;
+      font-weight:600;
       flex-shrink: 0;
     }
 
-    #map {
-      flex: 1;
-      border-radius: 10px;
-      overflow: hidden;
-      min-height: 0; /* Important for flex child */
+    .map-provider {
+      display:flex;
+      align-items:center;
+      gap:6px;
     }
 
-    /* FLOATING MENU */
+    .provider-dot {
+      width:12px;
+      height:12px;
+      border-radius:4px;
+      background:#111827;
+    }
+
+    #map {
+      flex-grow: 1;
+      border-radius:10px;
+      overflow:hidden;
+    }
+
+    /* FLOATING MENU BUTTON */
     .menu-fab {
-      position: absolute;
-      right: 14px;
-      bottom: 20px;
-      width: 30px;
-      height: 30px;
-      border-radius: 999px;
-      background: #111827;
-      box-shadow: 0 8px 18px rgba(0,0,0,0.55);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 14px;
-      color: #e5e7eb;
+      position:absolute;
+      right:14px;
+      bottom:20px;
+      width:30px;
+      height:30px;
+      border-radius:999px;
+      background:#111827;
+      box-shadow:0 8px 18px rgba(0,0,0,0.55);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      font-size:14px;
+      color:#e5e7eb;
       z-index: 10;
     }
 
+    .menu-fab::after {
+      content:"";
+      position:absolute;
+      width:18px;
+      height:18px;
+      border-radius:999px;
+      background:rgba(239,68,68,0.9);
+      right:-2px;
+      top:-2px;
+      box-shadow:0 0 0 6px rgba(239,68,68,0.35);
+    }
+
+    /* OPTIONS POPOVER */
     .options-menu {
-      position: absolute;
-      right: 6px;
-      top: 6px;
-      width: 190px;
-      border-radius: 14px;
-      background: #111827;
-      box-shadow: 0 18px 36px rgba(0,0,0,0.55);
-      border: 1px solid rgba(148,163,184,0.55);
-      padding: 6px 0;
-      font-size: 12px;
-      z-index: 20;
-      display: none;
+      position:absolute;
+      right:6px;
+      top:6px;
+      width:190px;
+      border-radius:14px;
+      background:#111827;
+      box-shadow:0 18px 36px rgba(0,0,0,0.55);
+      border:1px solid rgba(148,163,184,0.55);
+      padding:6px 0;
+      font-size:12px;
+      z-index:20;
+      display:none;
     }
 
     .options-menu.visible {
-      display: block;
+      display:block;
     }
 
     .opt-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 7px 10px;
-      cursor: pointer;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:7px 10px;
+      cursor:pointer;
     }
 
     .opt-row:hover {
-      background: #020617;
+      background:#020617;
     }
 
     .opt-left {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      color: #e5e7eb;
+      display:flex;
+      align-items:center;
+      gap:7px;
+      color:#e5e7eb;
+    }
+
+    .opt-icon {
+      font-size:13px;
+    }
+
+    .opt-label-sub {
+      font-size:11px;
+      color:var(--muted);
+    }
+
+    /* toggle */
+    .toggle {
+      width:34px;
+      height:18px;
+      border-radius:999px;
+      background:rgba(148,163,184,0.4);
+      position:relative;
+      cursor:pointer;
+    }
+
+    .toggle-knob {
+      position:absolute;
+      top:2px;
+      left:2px;
+      width:14px;
+      height:14px;
+      border-radius:999px;
+      background:#f9fafb;
+      transition:all 0.18s;
+    }
+
+    .toggle.on {
+      background:#22c55e;
+    }
+    .toggle.on .toggle-knob {
+      transform:translateX(14px);
+    }
+
+    .opt-right-text {
+      font-size:11px;
+      color:#e5e7eb;
     }
 
     /* LOCATION INFO */
     .loc-section {
       padding: 12px 16px 8px;
-      border-top: 1px dashed rgba(148,163,184,0.35);
-      font-size: 12px;
-      line-height: 1.35;
+      border-top:1px dashed rgba(148,163,184,0.35);
+      font-size:12px;
+      line-height:1.35;
       flex-shrink: 0;
     }
 
     .loc-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 3px;
-      gap: 8px;
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:3px;
+      gap:8px;
     }
 
     .loc-label {
-      color: var(--muted);
-      white-space: nowrap;
+      color:var(--muted);
+      white-space:nowrap;
     }
 
     .loc-value {
-      text-align: right;
+      text-align:right;
     }
 
-    /* ACTION BUTTONS */
+    .loc-address {
+      margin-top:4px;
+      font-size:12px;
+      color:#e5e7eb;
+    }
+
+    /* FOOTER BUTTONS */
     .action-row {
       padding: 8px 16px;
-      display: flex;
-      gap: 8px;
+      display:flex;
+      gap:8px;
       flex-shrink: 0;
     }
 
     .btn {
-      flex: 1;
-      border-radius: 999px;
-      border: none;
-      padding: 12px 0;
-      font-size: 14px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      cursor: pointer;
+      flex:1;
+      border-radius:999px;
+      border:none;
+      padding:12px 0;
+      font-size:14px;
+      font-weight:600;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      cursor:pointer;
     }
 
     .btn-refresh {
-      background: var(--accent);
-      color: #f9fafb;
+      background:var(--accent);
+      color:#f9fafb;
     }
 
     .btn-alt {
-      background: #020617;
-      border: 1px solid rgba(148,163,184,0.6);
-      color: #e5e7eb;
+      background:#020617;
+      border:1px solid rgba(148,163,184,0.6);
+      color:#e5e7eb;
     }
 
     .btn.disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
+      opacity:0.45;
+      cursor:not-allowed;
     }
 
     .meta-bar {
       padding: 8px 16px 12px;
-      font-size: 11px;
-      color: var(--muted);
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
+      font-size:11px;
+      color:var(--muted);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
       flex-shrink: 0;
     }
 
     /* LOGIN MODAL */
     .login-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.7);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:1000;
     }
 
     .login-modal.active {
-      display: flex;
+      display:flex;
     }
 
     .login-box {
-      width: 90%;
-      max-width: 360px;
-      background: #020617;
-      border-radius: 18px;
-      padding: 18px 16px;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.8);
-      border: 1px solid rgba(148,163,184,0.6);
+      width:90%;
+      max-width:360px;
+      background:#020617;
+      border-radius:18px;
+      padding:18px 16px 18px;
+      box-shadow:0 24px 60px rgba(0,0,0,0.8);
+      border:1px solid rgba(148,163,184,0.6);
     }
 
     .login-title {
-      font-size: 17px;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: #e5e7eb;
+      font-size:17px;
+      font-weight:600;
+      margin-bottom:4px;
+      color:#e5e7eb;
     }
 
     .login-sub {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 12px;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:12px;
     }
 
     .form-group {
-      margin-bottom: 10px;
+      margin-bottom:10px;
     }
 
     .form-group label {
-      display: block;
-      font-size: 12px;
-      margin-bottom: 4px;
-      color: #e5e7eb;
+      display:block;
+      font-size:12px;
+      margin-bottom:4px;
+      color:#e5e7eb;
     }
 
     .form-group input {
-      width: 100%;
-      border-radius: 10px;
-      border: 1px solid rgba(148,163,184,0.7);
-      background: #020617;
-      padding: 9px 11px;
-      color: #e5e7eb;
-      font-size: 13px;
+      width:100%;
+      border-radius:10px;
+      border:1px solid rgba(148,163,184,0.7);
+      background:#020617;
+      padding:9px 11px;
+      color:#e5e7eb;
+      font-size:13px;
+    }
+
+    .form-group input:focus {
+      outline:none;
+      border-color:var(--accent);
+      box-shadow:0 0 0 1px rgba(37,99,235,0.7);
     }
 
     .login-btn {
-      width: 100%;
-      margin-top: 4px;
-      border-radius: 999px;
-      padding: 9px 0;
-      border: none;
-      background: var(--accent);
-      color: #f9fafb;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
+      width:100%;
+      margin-top:4px;
+      border-radius:999px;
+      padding:9px 0;
+      border:none;
+      background:var(--accent);
+      color:#f9fafb;
+      font-weight:600;
+      font-size:13px;
+      cursor:pointer;
+    }
+
+    .login-btn:disabled {
+      opacity:0.55;
+      cursor:not-allowed;
+    }
+
+    .login-error {
+      font-size:12px;
+      color:var(--danger);
+      margin-top:4px;
+      min-height:16px;
+      display:none;
+    }
+
+    @keyframes shake {
+      0% { transform:translateX(0); }
+      25% { transform:translateX(-4px); }
+      50% { transform:translateX(4px); }
+      75% { transform:translateX(-4px); }
+      100% { transform:translateX(0); }
+    }
+
+    .shake {
+      animation:shake 0.25s ease-in-out;
     }
   </style>
 </head>
 <body>
 
-<!-- MAIN MOBILE CARD -->
-<div class="mobile-card" id="dashboard">
-  <div class="mc-header">
-    <div class="mc-title">Public Safety System</div>
-    <div class="mc-toolbar">
-      <div class="chip" id="chipUser">
-        <span>🆔</span>
-        <span id="chipUserText">User: –</span>
-      </div>
-      <div class="toolbar-btn" title="Share" onclick="shareUrl()">⤴</div>
-      <div class="toolbar-btn" title="Info" onclick="showUserInfo()">ⓘ</div>
-    </div>
-  </div>
+  <!-- MAIN MOBILE CARD -->
+  <div class="mobile-card" id="dashboard">
 
-  <div class="device-bar">
-    <div class="device-main">
-      <div class="device-id" id="deviceIdText">Device: –</div>
-      <div class="device-sub">
-        <div class="status-dot" id="statusDot"></div>
-        <span id="statusText">Offline</span>
-      </div>
-    </div>
-    <div class="battery-pill">
-      <span>🔋</span>
-      <span id="batteryText">unavailable</span>
-    </div>
-  </div>
-
-  <!-- MAP AREA -->
-  <div class="map-shell">
-    <div class="map-header-row">
-      <div class="map-provider">
-        <div class="provider-dot"></div>
-        <span>Map</span>
-      </div>
-      <span>OpenStreetMap</span>
-    </div>
-
-    <div id="map"></div>
-
-    <div class="menu-fab" onclick="toggleOptionsMenu()">⋯</div>
-
-    <div class="options-menu" id="optionsMenu">
-      <div class="opt-row" onclick="toggleAutoScroll()">
-        <div class="opt-left">
-          <span>👤</span>
-          <div>Auto Scroll</div>
+    <div class="mc-header">
+      <div class="mc-title">Public Safety System</div>
+      <div class="mc-toolbar">
+        <div class="chip" id="chipUser">
+          <span class="chip-icon">🆔</span>
+          <span id="chipUserText">User: –</span>
         </div>
-        <div class="toggle" id="autoScrollToggle">
-          <div class="toggle-knob"></div>
+        <div class="toolbar-btn" title="Share" onclick="shareUrl()">⤴</div>
+        <div class="toolbar-btn" title="Info" onclick="showUserInfo()">ⓘ</div>
+      </div>
+    </div>
+
+    <div class="device-bar">
+      <div class="device-main">
+        <div class="device-id" id="deviceIdText">Device: –</div>
+        <div class="device-sub">
+          <div class="status-dot" id="statusDot"></div>
+          <span id="statusText">Offline</span>
         </div>
       </div>
-      <div class="opt-row" onclick="changeAutoRefresh()">
-        <div class="opt-left">
-          <span>⏱️</span>
-          <div>Auto Refresh</div>
-        </div>
-        <select id="autoRefreshSelect" style="font-size:11px;padding:2px 4px;border-radius:8px;border:none;background:#020617;color:#e5e7eb;">
-          <option value="0">Off</option>
-          <option value="5000" selected>5 sec</option>
-          <option value="10000">10 sec</option>
-        </select>
+      <div class="battery-pill">
+        <span>🔋</span>
+        <span id="batteryText">unavailable</span>
       </div>
     </div>
-  </div>
 
-  <!-- LOCATION DETAILS -->
-  <div class="loc-section">
-    <div class="loc-row">
-      <div class="loc-label">Last updated</div>
-      <div class="loc-value" id="lastUpdated">unavailable</div>
-    </div>
-    <div class="loc-row">
-      <div class="loc-label">Latitude</div>
-      <div class="loc-value" id="latVal">unavailable</div>
-    </div>
-    <div class="loc-row">
-      <div class="loc-label">Longitude</div>
-      <div class="loc-value" id="lngVal">unavailable</div>
-    </div>
-    <div class="loc-address" id="addrVal">Address: unavailable</div>
-  </div>
+    <!-- MAP AREA -->
+    <div class="map-shell" id="mapShell">
+      <div class="map-header-row">
+        <div class="map-provider">
+          <div class="provider-dot"></div>
+          <span>Map</span>
+        </div>
+        <span>OpenStreetMap</span>
+      </div>
 
-  <!-- ACTION BUTTONS -->
-  <div class="action-row">
-    <button class="btn btn-refresh" onclick="refreshNow()">⟳ Refresh</button>
-    <button class="btn btn-alt disabled" id="dirBtn" onclick="openDirections()">🧭 Directions</button>
-  </div>
+      <div id="map"></div>
 
-  <div class="meta-bar">
-    <span id="metaUser">User: –</span>
-    <span id="metaDevice">Device: –</span>
-    <span>v2.0 Mobile</span>
+      <!-- floating menu button -->
+      <div class="menu-fab" onclick="toggleOptionsMenu()">⋯</div>
+
+      <!-- options menu -->
+      <div class="options-menu" id="optionsMenu">
+        <div class="opt-row" onclick="toggleExpandMap()">
+          <div class="opt-left">
+            <span class="opt-icon">🗺️</span>
+            <div>
+              <div>Expand Map View</div>
+              <div class="opt-label-sub" id="expandLabel">Compact</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="opt-row" onclick="toggleAutoScroll()">
+          <div class="opt-left">
+            <span class="opt-icon">👤</span>
+            <div>Auto Scroll</div>
+          </div>
+          <div class="toggle" id="autoScrollToggle">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+
+        <div class="opt-row" onclick="toggleHistory()">
+          <div class="opt-left">
+            <span class="opt-icon">🔁</span>
+            <div>Device Path History</div>
+          </div>
+          <div class="opt-right-text" id="historyLabel">Off</div>
+        </div>
+
+        <div class="opt-row">
+          <div class="opt-left">
+            <span class="opt-icon">⏱️</span>
+            <div>Auto Refresh</div>
+          </div>
+          <div class="opt-right-text">
+            <select id="autoRefreshSelect" style="font-size:11px;padding:2px 4px;border-radius:8px;border:none;background:#020617;color:#e5e7eb;" onchange="changeAutoRefresh()">
+              <option value="0">Off</option>
+              <option value="5000" selected>5 sec</option>
+              <option value="10000">10 sec</option>
+              <option value="60000">1 min</option>
+              <option value="900000">15 min</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOCATION DETAILS -->
+    <div class="loc-section">
+      <div class="loc-row">
+        <div class="loc-label">Last updated</div>
+        <div class="loc-value" id="lastUpdated">unavailable</div>
+      </div>
+      <div class="loc-row">
+        <div class="loc-label">Latitude</div>
+        <div class="loc-value" id="latVal">unavailable</div>
+      </div>
+      <div class="loc-row">
+        <div class="loc-label">Longitude</div>
+        <div class="loc-value" id="lngVal">unavailable</div>
+      </div>
+      <div class="loc-row">
+        <div class="loc-label">Accuracy</div>
+        <div class="loc-value" id="accVal">unavailable</div>
+      </div>
+      <div class="loc-address" id="addrVal">unavailable</div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-row">
+      <button class="btn btn-refresh" id="refreshBtn" onclick="refreshNow()">⟳ Refresh</button>
+      <button class="btn btn-alt disabled" id="dirBtn" onclick="openDirections()">🧭 Get Directions</button>
+    </div>
+
+    <div class="meta-bar">
+      <span id="metaUser">User: –</span>
+      <span id="metaDevice">Device: –</span>
+      <span>v2.0 Mobile</span>
+    </div>
   </div>
-</div>
 
 <!-- LOGIN MODAL -->
 <div class="login-modal" id="loginModal">
-  <div class="login-box">
+  <div class="login-box" id="loginBox">
     <div class="login-title">Public Safety System</div>
-    <div class="login-sub">Enter your User ID to access live location</div>
+    <div class="login-sub">Enter your assigned User ID to access live location.</div>
+
     <form id="loginForm">
       <div class="form-group">
         <label for="userIdInput">User ID</label>
-        <input type="text" id="userIdInput" placeholder="example-user-01" required />
+        <input type="text" id="userIdInput" placeholder="example-user-01" autocomplete="off" required />
       </div>
-      <button type="submit" class="login-btn">Access Dashboard</button>
+      <button type="submit" class="login-btn" id="loginBtn">Access Dashboard</button>
+      <div id="loginError" class="login-error">User not found</div>
     </form>
   </div>
 </div>
@@ -491,114 +638,441 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-// Simplified configuration
+/************** CONFIG **************/
 const API_URL = "https://jwki58wsv8.execute-api.ap-south-1.amazonaws.com/prod/location";
+const UNAVAIL = "unavailable";
 
-// Get user ID from URL
+/************** URL & AUTH HELPERS **************/
+function getUrlParams() {
+  return Object.fromEntries(new URLSearchParams(window.location.search).entries());
+}
+
 function getUserId() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get('userId');
+  const p = getUrlParams();
+  return p.userId || p.userid || p.id || null;
 }
 
-// Initialize map
-let map, marker;
-function initMap() {
-  map = L.map('map').setView([20.5937, 78.9629], 5);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-  marker = L.marker([20.5937, 78.9629]).addTo(map);
+function updateUrlUser(userId) {
+  const u = new URL(window.location);
+  if (userId) u.searchParams.set("userId", userId);
+  else u.searchParams.delete("userId");
+  window.history.replaceState({}, "", u);
 }
 
-// Refresh location data
-async function refreshNow() {
-  const userId = getUserId();
-  if (!userId) return;
+/************** BASIC UI HELPERS **************/
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent =
+    val === undefined || val === null || val === "" ? UNAVAIL : val;
+}
 
-  try {
-    const response = await fetch(`${API_URL}?userId=${userId}`);
-    const data = await response.json();
-    
-    // Update UI with location data
-    if (data.latitude && data.longitude) {
-      const lat = parseFloat(data.latitude);
-      const lng = parseFloat(data.longitude);
-      
-      marker.setLatLng([lat, lng]);
-      map.setView([lat, lng], 15);
-      
-      document.getElementById('latVal').textContent = lat.toFixed(6);
-      document.getElementById('lngVal').textContent = lng.toFixed(6);
-      document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
-      document.getElementById('statusDot').classList.add('online');
-      document.getElementById('statusText').textContent = 'Online';
-    }
-  } catch (error) {
-    console.error('Error fetching location:', error);
+function setOnlineStatus(isOnline) {
+  const dot = document.getElementById("statusDot");
+  const text = document.getElementById("statusText");
+  if (!dot || !text) return;
+
+  if (isOnline) {
+    dot.classList.add("online");
+    text.textContent = "Online";
+  } else {
+    dot.classList.remove("online");
+    text.textContent = "Offline";
   }
 }
 
-// Simple functions for UI interactions
+function setBtnDisabled(btnEl, disabled) {
+  if (!btnEl) return;
+  if (disabled) btnEl.classList.add("disabled");
+  else btnEl.classList.remove("disabled");
+}
+
+/************** SHARE / INFO / LOGOUT **************/
 function shareUrl() {
-  navigator.share?.({
-    title: 'Public Safety System',
-    text: 'Live location dashboard',
-    url: window.location.href
-  }).catch(() => {
-    navigator.clipboard.writeText(window.location.href);
-    alert('URL copied to clipboard');
-  });
+  const url = window.location.href;
+  if (navigator.share) {
+    navigator.share({
+      title: "Public Safety System",
+      text: "Live location dashboard (mobile).",
+      url
+    }).catch(() => fallbackShare(url));
+  } else fallbackShare(url);
+}
+
+function fallbackShare(url) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      alert("URL copied: " + url);
+    }).catch(() => {
+      prompt("Copy this link:", url);
+    });
+  } else {
+    prompt("Copy this link:", url);
+  }
 }
 
 function showUserInfo() {
-  alert('Public Safety System\nMobile Tracking v2.0');
+  const uid = getUserId();
+  alert(`Current User ID: ${uid || "none"}\nMobile Tracking UI v2.0`);
 }
 
-function toggleOptionsMenu() {
-  document.getElementById('optionsMenu').classList.toggle('visible');
+/************** LOGIN FLOW **************/
+async function verifyAndLogin(userId) {
+  const btn = document.getElementById("loginBtn");
+  const errorMsg = document.getElementById("loginError");
+  const box = document.getElementById("loginBox");
+
+  errorMsg.style.display = "none";
+  btn.disabled = true;
+  btn.textContent = "Verifying…";
+  box.classList.remove("shake");
+
+  try {
+    const resp = await fetch(`${API_URL}?userId=${encodeURIComponent(userId)}`);
+    const json = await resp.json();
+
+    let payload;
+    if (json && typeof json === "object" && json.body) {
+      try {
+        payload =
+          typeof json.body === "string" ? JSON.parse(json.body) : json.body;
+      } catch (e) {
+        payload = json.body;
+      }
+    } else payload = json;
+
+    if (
+      payload.success === false ||
+      payload.success === "false" ||
+      payload.error ||
+      (!payload && !payload.data)
+    ) {
+      throw new Error("User not found");
+    }
+
+    // success
+    updateUrlUser(userId);
+    document.getElementById("loginModal").classList.remove("active");
+    initDashboard();
+  } catch (e) {
+    console.log("Login verify failed:", e);
+    errorMsg.style.display = "block";
+    errorMsg.textContent = "User not found";
+    box.classList.add("shake");
+    setTimeout(() => box.classList.remove("shake"), 350);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Access Dashboard";
+  }
 }
 
-function toggleAutoScroll() {
-  document.getElementById('autoScrollToggle').classList.toggle('on');
+/************** MAP SETUP **************/
+let map, marker, accuracyCircle;
+let currentLat = null,
+  currentLng = null;
+
+function initMap() {
+  if (map) return;
+  map = L.map("map", { zoomControl: true }).setView([20.5937, 78.9629], 5);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "© OpenStreetMap"
+  }).addTo(map);
+
+  marker = L.marker([20.5937, 78.9629]).addTo(map);
+  accuracyCircle = L.circle([20.5937, 78.9629], {
+    radius: 0,
+    color: "#2563eb",
+    opacity: 0.25,
+    fillOpacity: 0.08
+  }).addTo(map);
 }
 
-function changeAutoRefresh() {
-  const select = document.getElementById('autoRefreshSelect');
-  alert(`Auto refresh set to: ${select.options[select.selectedIndex].text}`);
+/************** DASHBOARD STATE **************/
+let isAutoScroll = false;
+let showHistory = false;
+let expandedMap = false;
+let autoRefreshIntervalMs = 5000;
+let autoRefreshTimer = null;
+
+/************** FETCH + APPLY **************/
+async function fetchAndApply() {
+  const uid = getUserId();
+  if (!uid) {
+    applyUnavailableUI();
+    return;
+  }
+
+  setText("lastUpdated", "Fetching…");
+  setOnlineStatus(false);
+
+  try {
+    const resp = await fetch(`${API_URL}?userId=${encodeURIComponent(uid)}`);
+    const json = await resp.json();
+
+    let payload;
+    if (json && typeof json === "object" && json.body) {
+      try {
+        payload =
+          typeof json.body === "string" ? JSON.parse(json.body) : json.body;
+      } catch (e) {
+        payload = json.body;
+      }
+    } else payload = json;
+
+    if (payload.success === false || payload.error) {
+      applyUnavailableUI(payload);
+      return;
+    }
+
+    let data = payload && payload.data ? payload.data : payload;
+    if (!data || Object.keys(data).length === 0) {
+      applyUnavailableUI();
+      return;
+    }
+
+    const lat = parseFloat(
+      data.latitude ?? data.lat ?? Number.NaN
+    );
+    const lng = parseFloat(
+      data.longitude ?? data.lon ?? data.lng ?? Number.NaN
+    );
+
+    if (!isFinite(lat) || !isFinite(lng)) {
+      applyUnavailableUI(data);
+      return;
+    }
+
+    // ONLINE
+    setOnlineStatus(true);
+
+    currentLat = lat;
+    currentLng = lng;
+
+    marker.setLatLng([lat, lng]);
+    const acc =
+      data.accuracy !== undefined && data.accuracy !== null
+        ? Number(data.accuracy)
+        : 0;
+    accuracyCircle.setLatLng([lat, lng]);
+    accuracyCircle.setRadius(acc || 0);
+
+    if (isAutoScroll) {
+      map.setView([lat, lng], 15, { animate: true });
+    }
+
+    const userIdVal = data.userId ?? uid;
+    document.getElementById("chipUserText").textContent = `User: ${userIdVal}`;
+    document.getElementById("deviceIdText").textContent = `Device: ${
+      data.device ?? userIdVal
+    }`;
+    document.getElementById("metaUser").textContent = `User: ${userIdVal}`;
+    document.getElementById("metaDevice").textContent = `Device: ${
+      data.device ?? "unavailable"
+    }`;
+
+    // battery
+    const battLevel = data.batteryPercentage ?? data.battery;
+    const isCharging = data.isCharging ?? data.charging;
+    if (battLevel !== undefined && battLevel !== null) {
+      document.getElementById("batteryText").textContent =
+        battLevel + "% " + (isCharging ? "⚡" : "");
+    } else document.getElementById("batteryText").textContent = UNAVAIL;
+
+    // Lat/Lng/Acc
+    setText("latVal", lat.toFixed(6));
+    setText("lngVal", lng.toFixed(6));
+    setText("accVal", data.accuracy ? Math.round(data.accuracy) + " m" : UNAVAIL);
+
+    // Address
+    if (data.address) {
+      setText("addrVal", data.address);
+    } else {
+      fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
+      )
+        .then((r) => r.json())
+        .then((d) => {
+          const disp = d && d.display_name ? d.display_name : UNAVAIL;
+          document.getElementById("addrVal").textContent = disp;
+        })
+        .catch(() => {
+          document.getElementById("addrVal").textContent = UNAVAIL;
+        });
+    }
+
+    // time
+    const apiTimestamp = data.timestamp ?? data.time ?? data.ts ?? null;
+    if (apiTimestamp) {
+      const parsed = new Date(apiTimestamp);
+      if (!isNaN(parsed.getTime()))
+        setText("lastUpdated", parsed.toLocaleString());
+      else setText("lastUpdated", apiTimestamp);
+    } else {
+      setText("lastUpdated", new Date().toLocaleString());
+    }
+
+    // marker popup
+    marker
+      .bindPopup(
+        `<b>User:</b> ${userIdVal}<br><b>Lat:</b> ${lat.toFixed(
+          6
+        )}<br><b>Lng:</b> ${lng.toFixed(6)}`
+      )
+      .openPopup();
+
+    // directions button
+    setBtnDisabled(document.getElementById("dirBtn"), false);
+  } catch (err) {
+    console.error("Fetch error:", err);
+    applyUnavailableUI();
+  }
+}
+
+function applyUnavailableUI(data) {
+  const uid = getUserId();
+  const userIdVal = data && data.userId ? data.userId : uid || "–";
+
+  document.getElementById("chipUserText").textContent = `User: ${userIdVal}`;
+  document.getElementById("deviceIdText").textContent = `Device: ${
+    data && data.device ? data.device : "unavailable"
+  }`;
+  document.getElementById("metaUser").textContent = `User: ${userIdVal}`;
+  document.getElementById("metaDevice").textContent = `Device: ${
+    data && data.device ? data.device : "unavailable"
+  }`;
+
+  setOnlineStatus(false);
+  setText("batteryText", UNAVAIL);
+  setText("latVal", UNAVAIL);
+  setText("lngVal", UNAVAIL);
+  setText("accVal", UNAVAIL);
+  setText("addrVal", UNAVAIL);
+  setText("lastUpdated", UNAVAIL);
+
+  setBtnDisabled(document.getElementById("dirBtn"), true);
+}
+
+/************** ACTION BUTTONS **************/
+function refreshNow() {
+  fetchAndApply();
 }
 
 function openDirections() {
-  alert('Directions feature would open here');
+  if (!currentLat || !currentLng) {
+    alert("Location not available yet.");
+    return;
+  }
+  const url = `https://www.google.com/maps/dir/?api=1&destination=${currentLat},${currentLng}&travelmode=driving`;
+  window.open(url, "_blank");
 }
 
-// Initialize app
-document.addEventListener('DOMContentLoaded', function() {
-  initMap();
-  
-  const userId = getUserId();
-  if (userId) {
-    document.getElementById('loginModal').classList.remove('active');
-    document.getElementById('chipUserText').textContent = `User: ${userId}`;
-    document.getElementById('metaUser').textContent = `User: ${userId}`;
-    refreshNow();
+/************** OPTIONS MENU + SETTINGS **************/
+function toggleOptionsMenu() {
+  const menu = document.getElementById("optionsMenu");
+  menu.classList.toggle("visible");
+}
+
+function toggleAutoScroll() {
+  isAutoScroll = !isAutoScroll;
+  const t = document.getElementById("autoScrollToggle");
+  if (isAutoScroll) {
+    t.classList.add("on");
+    if (currentLat && currentLng) {
+      map.setView([currentLat, currentLng], 15, { animate: true });
+    }
+  } else t.classList.remove("on");
+}
+
+function toggleHistory() {
+  showHistory = !showHistory;
+  document.getElementById("historyLabel").textContent = showHistory ? "On" : "Off";
+  alert("Device Path History is a placeholder for now.");
+}
+
+function toggleExpandMap() {
+  expandedMap = !expandedMap;
+  const shell = document.getElementById("mapShell");
+  const label = document.getElementById("expandLabel");
+  if (expandedMap) {
+    shell.classList.add("expanded");
+    label.textContent = "Expanded";
   } else {
-    document.getElementById('loginModal').classList.add('active');
+    shell.classList.remove("expanded");
+    label.textContent = "Compact";
+  }
+}
+
+function changeAutoRefresh() {
+  const val = Number(document.getElementById("autoRefreshSelect").value);
+  autoRefreshIntervalMs = val;
+  if (autoRefreshTimer) {
+    clearInterval(autoRefreshTimer);
+    autoRefreshTimer = null;
+  }
+  if (autoRefreshIntervalMs > 0) {
+    autoRefreshTimer = setInterval(fetchAndApply, autoRefreshIntervalMs);
+  }
+}
+
+/************** DASHBOARD INIT **************/
+function initDashboard() {
+  const uid = getUserId();
+  if (uid) {
+    document.getElementById("chipUserText").textContent = `User: ${uid}`;
+    document.getElementById("metaUser").textContent = `User: ${uid}`;
   }
 
-  // Login form handler
-  document.getElementById('loginForm').addEventListener('submit', function(e) {
+  // default auto refresh 5 sec
+  document.getElementById("autoRefreshSelect").value = "5000";
+  autoRefreshIntervalMs = 5000;
+  if (!autoRefreshTimer) {
+    autoRefreshTimer = setInterval(fetchAndApply, autoRefreshIntervalMs);
+  }
+  fetchAndApply();
+}
+
+/************** DOM READY **************/
+document.addEventListener("DOMContentLoaded", () => {
+  initMap();
+
+  const uid = getUserId();
+
+  // login form handler
+  document.getElementById("loginForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    const userId = document.getElementById('userIdInput').value.trim();
-    if (userId) {
-      window.location.search = `?userId=${userId}`;
+    const val = document.getElementById("userIdInput").value.trim();
+    if (val) verifyAndLogin(val);
+  });
+
+  if (uid) {
+    document.getElementById("loginModal").classList.remove("active");
+    initDashboard();
+  } else {
+    document.getElementById("loginModal").classList.add("active");
+  }
+
+  // close menu if clicking outside
+  document.addEventListener("click", (e) => {
+    const menu = document.getElementById("optionsMenu");
+    const fab = document.querySelector(".menu-fab");
+    if (!menu.contains(e.target) && !fab.contains(e.target)) {
+      menu.classList.remove("visible");
     }
   });
 });
 
-// Close menu when clicking outside
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.menu-fab') && !e.target.closest('.options-menu')) {
-    document.getElementById('optionsMenu').classList.remove('visible');
-  }
-});
+// expose for inline handlers
+window.shareUrl = shareUrl;
+window.showUserInfo = showUserInfo;
+window.refreshNow = refreshNow;
+window.openDirections = openDirections;
+window.toggleOptionsMenu = toggleOptionsMenu;
+window.toggleAutoScroll = toggleAutoScroll;
+window.toggleHistory = toggleHistory;
+window.toggleExpandMap = toggleExpandMap;
+window.changeAutoRefresh = changeAutoRefresh;
 </script>
 </body>
 </html>
