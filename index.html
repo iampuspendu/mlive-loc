@@ -149,8 +149,8 @@
 
     /* MAP CARD */
     .map-shell {
-      flex-grow: 1;
-      margin: 0 8px;
+      flex-grow: 0;
+      margin: 0 8px 8px;
       border-radius: 14px;
       background: #f3f4f6;
       padding: 8px;
@@ -158,6 +158,8 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      aspect-ratio: 1 / 1;
+      max-height: 50vh;
     }
 
     .map-header-row {
@@ -233,7 +235,7 @@
       border: 1px solid rgba(148,163,184,0.55);
       padding: 6px 0;
       font-size: 12px;
-      z-index: 20;
+      z-index: 1000;
       opacity: 0;
       transform: translateY(-10px);
       pointer-events: none;
@@ -535,7 +537,7 @@
       <div id="map"></div>
 
       <!-- floating menu button -->
-      <div class="menu-fab" onclick="toggleOptionsMenu()">⋯</div>
+      <div class="menu-fab" id="menuFab">⋯</div>
 
       <!-- options menu -->
       <div class="options-menu" id="optionsMenu">
@@ -971,7 +973,10 @@ function openDirections() {
 }
 
 /************** OPTIONS MENU + SETTINGS **************/
-function toggleOptionsMenu() {
+function toggleOptionsMenu(event) {
+  if (event) {
+    event.stopPropagation();
+  }
   const menu = document.getElementById("optionsMenu");
   menu.classList.toggle("visible");
 }
@@ -1055,13 +1060,23 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("loginModal").classList.add("active");
   }
 
-  // close menu if clicking outside
-  document.addEventListener("click", (e) => {
-    const menu = document.getElementById("optionsMenu");
-    const fab = document.querySelector(".menu-fab");
-    if (!menu.contains(e.target) && !fab.contains(e.target)) {
-      menu.classList.remove("visible");
-    }
+  // Set up menu toggle with proper event handling
+  const menuFab = document.getElementById("menuFab");
+  const optionsMenu = document.getElementById("optionsMenu");
+  
+  menuFab.addEventListener("click", function(event) {
+    event.stopPropagation();
+    toggleOptionsMenu(event);
+  });
+
+  // Prevent clicks inside the menu from closing it
+  optionsMenu.addEventListener("click", function(event) {
+    event.stopPropagation();
+  });
+
+  // Close menu when clicking anywhere else
+  document.addEventListener("click", function() {
+    optionsMenu.classList.remove("visible");
   });
 });
 
