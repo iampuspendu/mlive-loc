@@ -26,15 +26,15 @@
       margin: 0;
       padding: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #020617;
-      color: var(--card-soft);
+      background: #f5f5f5;
+      color: #1f2937;
       height: 100vh;
       overflow: hidden;
     }
 
-    /* MAIN CARD (full screen mobile UI) */
+    /* MAIN MOBILE CARD */
     .mobile-card {
-      background: #111827;
+      background: #f5f5f5;
       height: 100vh;
       display: flex;
       flex-direction: column;
@@ -42,134 +42,138 @@
       overflow: hidden;
     }
 
-    /* HEADER */
-    .mc-header {
+    /* TOP CARD */
+    .top-card {
+      background: #ffffff;
+      margin: 12px 12px 8px;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    /* FIRST ROW - TITLE AND BUTTONS */
+    .title-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 16px 8px;
-      flex-shrink: 0;
+      margin-bottom: 8px;
     }
 
-    .mc-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #e5e7eb;
+    .app-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: #1f2937;
+      position: relative;
+      padding-bottom: 6px;
     }
 
-    .mc-toolbar {
+    .app-title::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 40px;
+      height: 3px;
+      background: #2563eb;
+      border-radius: 2px;
+    }
+
+    .title-buttons {
       display: flex;
       gap: 8px;
-      align-items: center;
     }
 
-    .chip {
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 11px;
-      border: 1px solid rgba(148,163,184,0.35);
-      color: #e5e7eb;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .chip-icon {
-      font-size: 11px;
-    }
-
-    .toolbar-btn {
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.5);
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: #f3f4f6;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 13px;
-      color: #e5e7eb;
-      background: rgba(15,23,42,0.7);
+      font-size: 16px;
+      color: #4b5563;
       cursor: pointer;
     }
 
-    .toolbar-btn:active {
-      transform: scale(0.96);
+    .icon-btn:active {
+      background: #e5e7eb;
     }
 
-    /* DEVICE ROW */
-    .device-bar {
+    /* SECOND ROW - DEVICE ID AND BATTERY */
+    .device-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 16px 8px;
-      flex-shrink: 0;
-    }
-
-    .device-main {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+      margin: 12px 0 8px;
     }
 
     .device-id {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 600;
+      color: #111827;
     }
 
-    .device-sub {
-      font-size: 12px;
-      color: var(--muted);
+    .battery-info {
       display: flex;
       align-items: center;
       gap: 6px;
+      font-size: 14px;
+      color: #4b5563;
+    }
+
+    /* THIRD ROW - STATUS */
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+    }
+
+    .status-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: #4b5563;
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--danger);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ef4444;
     }
 
     .status-dot.online {
-      background: var(--success);
-    }
-
-    .battery-pill {
-      padding: 4px 9px;
-      border-radius: 999px;
-      background: #020617;
-      border: 1px solid rgba(148,163,184,0.4);
-      font-size: 11px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: #e5e7eb;
+      background: #22c55e;
     }
 
     /* MAP CARD */
     .map-shell {
       flex-grow: 0;
-      margin: 0 8px 8px;
-      border-radius: 14px;
+      margin: 0 12px 12px;
+      border-radius: 12px;
       background: #f3f4f6;
-      padding: 8px;
+      padding: 12px;
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       aspect-ratio: 1 / 1;
       max-height: 50vh;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
 
     .map-header-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 6px;
-      font-size: 11px;
-      color: #4b5563;
-      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: 500;
       flex-shrink: 0;
     }
 
@@ -188,56 +192,45 @@
 
     #map {
       flex-grow: 1;
-      border-radius: 10px;
+      border-radius: 8px;
       overflow: hidden;
     }
 
     /* FLOATING MENU BUTTON */
     .menu-fab {
       position: absolute;
-      right: 14px;
+      right: 20px;
       bottom: 20px;
-      width: 30px;
-      height: 30px;
-      border-radius: 999px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
       background: #111827;
-      box-shadow: 0 8px 18px rgba(0,0,0,0.55);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 14px;
-      color: #e5e7eb;
-      z-index: 10;
-    }
-
-    .menu-fab::after {
-      content: "";
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      border-radius: 999px;
-      background: rgba(239,68,68,0.9);
-      right: -2px;
-      top: -2px;
-      box-shadow: 0 0 0 6px rgba(239,68,68,0.35);
+      font-size: 20px;
+      color: #ffffff;
+      z-index: 1000;
+      border: none;
     }
 
     /* OPTIONS POPOVER */
     .options-menu {
       position: absolute;
-      right: 6px;
-      top: 6px;
-      width: 190px;
-      border-radius: 14px;
-      background: #111827;
-      box-shadow: 0 18px 36px rgba(0,0,0,0.55);
-      border: 1px solid rgba(148,163,184,0.55);
-      padding: 6px 0;
-      font-size: 12px;
-      z-index: 1000;
+      right: 20px;
+      bottom: 70px;
+      width: 200px;
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      border: 1px solid #e5e7eb;
+      padding: 8px 0;
+      font-size: 14px;
+      z-index: 1001;
       opacity: 0;
-      transform: translateY(-10px);
+      transform: translateY(10px);
       pointer-events: none;
       transition: opacity 0.2s ease, transform 0.2s ease;
     }
@@ -252,136 +245,154 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 7px 10px;
+      padding: 10px 14px;
       cursor: pointer;
     }
 
     .opt-row:hover {
-      background: #020617;
+      background: #f9fafb;
     }
 
     .opt-left {
       display: flex;
       align-items: center;
-      gap: 7px;
-      color: #e5e7eb;
+      gap: 10px;
+      color: #374151;
     }
 
     .opt-icon {
-      font-size: 13px;
+      font-size: 16px;
     }
 
     .opt-label-sub {
-      font-size: 11px;
-      color: var(--muted);
+      font-size: 12px;
+      color: #9ca3af;
     }
 
     /* toggle */
     .toggle {
-      width: 34px;
-      height: 18px;
+      width: 38px;
+      height: 20px;
       border-radius: 999px;
-      background: rgba(148,163,184,0.4);
+      background: #d1d5db;
       position: relative;
       cursor: pointer;
+      transition: background 0.2s;
     }
 
     .toggle-knob {
       position: absolute;
       top: 2px;
       left: 2px;
-      width: 14px;
-      height: 14px;
-      border-radius: 999px;
-      background: #f9fafb;
-      transition: all 0.18s;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #ffffff;
+      transition: all 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
 
     .toggle.on {
       background: #22c55e;
     }
     .toggle.on .toggle-knob {
-      transform: translateX(14px);
+      transform: translateX(18px);
     }
 
     .opt-right-text {
-      font-size: 11px;
-      color: #e5e7eb;
+      font-size: 12px;
+      color: #6b7280;
     }
 
     /* LOCATION INFO */
     .loc-section {
-      padding: 12px 16px 8px;
-      border-top: 1px dashed rgba(148,163,184,0.35);
-      font-size: 12px;
-      line-height: 1.35;
+      padding: 16px;
+      background: #ffffff;
+      margin: 0 12px 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.4;
       flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
 
     .loc-row {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 3px;
+      margin-bottom: 6px;
       gap: 8px;
     }
 
     .loc-label {
-      color: var(--muted);
+      color: #6b7280;
       white-space: nowrap;
     }
 
     .loc-value {
       text-align: right;
+      color: #111827;
+      font-family: monospace;
     }
 
     .loc-address {
-      margin-top: 4px;
-      font-size: 12px;
-      color: #e5e7eb;
+      margin-top: 8px;
+      font-size: 14px;
+      color: #111827;
+      padding-top: 8px;
+      border-top: 1px dashed #e5e7eb;
     }
 
     /* FOOTER BUTTONS */
     .action-row {
-      padding: 8px 16px;
+      padding: 0 12px 12px;
       display: flex;
-      gap: 8px;
+      gap: 12px;
       flex-shrink: 0;
     }
 
     .btn {
       flex: 1;
-      border-radius: 999px;
+      border-radius: 10px;
       border: none;
-      padding: 12px 0;
-      font-size: 14px;
+      padding: 14px 0;
+      font-size: 16px;
       font-weight: 600;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
       cursor: pointer;
+      transition: all 0.2s;
     }
 
     .btn-refresh {
-      background: var(--accent);
-      color: #f9fafb;
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .btn-refresh:active {
+      background: #1d4ed8;
     }
 
     .btn-alt {
-      background: #020617;
-      border: 1px solid rgba(148,163,184,0.6);
-      color: #e5e7eb;
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      color: #374151;
+    }
+
+    .btn-alt:active {
+      background: #e5e7eb;
     }
 
     .btn.disabled {
-      opacity: 0.45;
+      opacity: 0.5;
       cursor: not-allowed;
     }
 
     .meta-bar {
-      padding: 8px 16px 12px;
-      font-size: 11px;
-      color: var(--muted);
+      padding: 0 12px 12px;
+      font-size: 12px;
+      color: #9ca3af;
       display: flex;
       justify-content: space-between;
       gap: 10px;
@@ -397,7 +408,7 @@
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
+      z-index: 2000;
     }
 
     .login-modal.active {
@@ -407,76 +418,76 @@
     .login-box {
       width: 90%;
       max-width: 360px;
-      background: #020617;
-      border-radius: 18px;
-      padding: 18px 16px 18px;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.8);
-      border: 1px solid rgba(148,163,184,0.6);
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px 20px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+      border: 1px solid #e5e7eb;
     }
 
     .login-title {
-      font-size: 17px;
+      font-size: 20px;
       font-weight: 600;
-      margin-bottom: 4px;
-      color: #e5e7eb;
+      margin-bottom: 6px;
+      color: #111827;
     }
 
     .login-sub {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 12px;
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 20px;
     }
 
     .form-group {
-      margin-bottom: 10px;
+      margin-bottom: 16px;
     }
 
     .form-group label {
       display: block;
-      font-size: 12px;
-      margin-bottom: 4px;
-      color: #e5e7eb;
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: #374151;
     }
 
     .form-group input {
       width: 100%;
       border-radius: 10px;
-      border: 1px solid rgba(148,163,184,0.7);
-      background: #020617;
-      padding: 9px 11px;
-      color: #e5e7eb;
-      font-size: 13px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      padding: 12px 14px;
+      color: #111827;
+      font-size: 16px;
     }
 
     .form-group input:focus {
       outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(37,99,235,0.7);
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
     }
 
     .login-btn {
       width: 100%;
-      margin-top: 4px;
-      border-radius: 999px;
-      padding: 9px 0;
+      margin-top: 8px;
+      border-radius: 10px;
+      padding: 14px 0;
       border: none;
-      background: var(--accent);
-      color: #f9fafb;
+      background: #2563eb;
+      color: #ffffff;
       font-weight: 600;
-      font-size: 13px;
+      font-size: 16px;
       cursor: pointer;
     }
 
     .login-btn:disabled {
-      opacity: 0.55;
+      opacity: 0.6;
       cursor: not-allowed;
     }
 
     .login-error {
-      font-size: 12px;
-      color: var(--danger);
-      margin-top: 4px;
-      min-height: 16px;
+      font-size: 14px;
+      color: #ef4444;
+      margin-top: 8px;
+      min-height: 20px;
       display: none;
     }
 
@@ -498,29 +509,33 @@
   <!-- MAIN MOBILE CARD -->
   <div class="mobile-card" id="dashboard">
 
-    <div class="mc-header">
-      <div class="mc-title">Public Safety System</div>
-      <div class="mc-toolbar">
-        <div class="chip" id="chipUser">
-          <span class="chip-icon">🆔</span>
-          <span id="chipUserText">User: –</span>
+    <!-- TOP CARD -->
+    <div class="top-card">
+      <!-- FIRST ROW -->
+      <div class="title-row">
+        <div class="app-title">Public Safety System</div>
+        <div class="title-buttons">
+          <button class="icon-btn" title="Info" onclick="showUserInfo()">ⓘ</button>
+          <button class="icon-btn" title="Share" onclick="shareUrl()">⤴</button>
         </div>
-        <div class="toolbar-btn" title="Share" onclick="shareUrl()">⤴</div>
-        <div class="toolbar-btn" title="Info" onclick="showUserInfo()">ⓘ</div>
       </div>
-    </div>
-
-    <div class="device-bar">
-      <div class="device-main">
+      
+      <!-- SECOND ROW -->
+      <div class="device-row">
         <div class="device-id" id="deviceIdText">Device: –</div>
-        <div class="device-sub">
-          <div class="status-dot" id="statusDot"></div>
-          <span id="statusText">Offline</span>
+        <div class="battery-info">
+          <span>🔋</span>
+          <span id="batteryText">unavailable</span>
         </div>
       </div>
-      <div class="battery-pill">
-        <span>🔋</span>
-        <span id="batteryText">unavailable</span>
+      
+      <!-- THIRD ROW -->
+      <div class="status-row">
+        <div class="status-info">
+          <div class="status-dot" id="statusDot"></div>
+          <span id="statusText">Status: Offline</span>
+        </div>
+        <div></div> <!-- Empty right side -->
       </div>
     </div>
 
@@ -537,7 +552,7 @@
       <div id="map"></div>
 
       <!-- floating menu button -->
-      <div class="menu-fab" id="menuFab">⋯</div>
+      <button class="menu-fab" id="menuFab">⋯</button>
 
       <!-- options menu -->
       <div class="options-menu" id="optionsMenu">
@@ -575,7 +590,7 @@
             <div>Auto Refresh</div>
           </div>
           <div class="opt-right-text">
-            <select id="autoRefreshSelect" style="font-size:11px;padding:2px 4px;border-radius:8px;border:none;background:#020617;color:#e5e7eb;" onchange="changeAutoRefresh()">
+            <select id="autoRefreshSelect" style="font-size:12px;padding:4px 6px;border-radius:6px;border:1px solid #d1d5db;background:#ffffff;color:#374151;" onchange="changeAutoRefresh()">
               <option value="0">Off</option>
               <option value="5000" selected>5 sec</option>
               <option value="10000">10 sec</option>
@@ -678,10 +693,10 @@ function setOnlineStatus(isOnline) {
 
   if (isOnline) {
     dot.classList.add("online");
-    text.textContent = "Online";
+    text.textContent = "Status: Online";
   } else {
     dot.classList.remove("online");
-    text.textContent = "Offline";
+    text.textContent = "Status: Offline";
   }
 }
 
@@ -938,7 +953,6 @@ function applyUnavailableUI(data) {
   const uid = getUserId();
   const userIdVal = data && data.userId ? data.userId : uid || "–";
 
-  document.getElementById("chipUserText").textContent = `User: ${userIdVal}`;
   document.getElementById("deviceIdText").textContent = `Device: ${
     data && data.device ? data.device : "unavailable"
   }`;
@@ -1027,7 +1041,6 @@ function changeAutoRefresh() {
 function initDashboard() {
   const uid = getUserId();
   if (uid) {
-    document.getElementById("chipUserText").textContent = `User: ${uid}`;
     document.getElementById("metaUser").textContent = `User: ${uid}`;
   }
 
