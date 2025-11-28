@@ -343,17 +343,24 @@
       border-top: 1px dashed #e5e7eb;
     }
 
-    /* FOOTER BUTTONS */
-    .action-row {
-      padding: 0 12px 12px;
-      display: flex;
-      gap: 12px;
+    /* BOTTOM ACTION BAR */
+    .action-bar {
+      background: #ffffff;
+      margin: 0 12px 12px;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       flex-shrink: 0;
     }
 
-    .btn {
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .action-btn {
       flex: 1;
-      border-radius: 24px;
+      border-radius: 999px;
       border: none;
       padding: 14px 0;
       font-size: 16px;
@@ -368,25 +375,25 @@
     }
 
     .btn-refresh {
-      background: #f3f4f6;
+      background: #f8f9fa;
       color: #374151;
-      border: 1px solid #d1d5db;
+      border: 1px solid #e5e7eb;
     }
 
     .btn-refresh:active {
-      background: #e5e7eb;
+      background: #e9ecef;
     }
 
-    .btn-alt {
+    .btn-directions {
       background: #2563eb;
       color: #ffffff;
     }
 
-    .btn-alt:active {
+    .btn-directions:active {
       background: #1d4ed8;
     }
 
-    .btn.disabled {
+    .action-btn.disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
@@ -631,10 +638,18 @@
       <div class="loc-address" id="addrVal">–</div>
     </div>
 
-    <!-- ACTION BUTTONS -->
-    <div class="action-row">
-      <button class="btn btn-refresh" id="refreshBtn" onclick="refreshNow()">⟳ Refresh</button>
-      <button class="btn btn-alt disabled" id="dirBtn" onclick="openDirections()">🧭 Get Directions</button>
+    <!-- BOTTOM ACTION BAR -->
+    <div class="action-bar">
+      <div class="action-buttons">
+        <button class="action-btn btn-refresh" onclick="refreshNow()">
+          <span>⟳</span>
+          <span>Refresh</span>
+        </button>
+        <button class="action-btn btn-directions disabled" id="dirBtn" onclick="openDirections()">
+          <span>🧭</span>
+          <span>Get Directions</span>
+        </button>
+      </div>
     </div>
 
     <div class="meta-bar">
