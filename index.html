@@ -552,6 +552,18 @@
       font-style: italic;
     }
 
+    .new-logs-indicator {
+      background: #dbeafe;
+      color: #1e40af;
+      padding: 8px 12px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 12px;
+      margin: 8px 0;
+      cursor: pointer;
+      border: 1px solid #bfdbfe;
+    }
+
     .logs-pagination {
       display: flex;
       justify-content: space-between;
@@ -1271,11 +1283,15 @@ let currentLogsPage = 1;
 let totalLogsPages = 1;
 let currentLogsMode = 'realtime';
 let realtimeLogsInterval = null;
+let lastRenderedLog = null;
+let isUserScrolledUp = false;
 
 function openLogsModal() {
   document.getElementById("logsModal").classList.add("active");
   currentLogsPage = 1;
   currentLogsMode = 'realtime';
+  lastRenderedLog = null;
+  isUserScrolledUp = false;
   
   // Set active tab
   document.querySelectorAll('.mode-tab').forEach(tab => {
@@ -1297,6 +1313,8 @@ function closeLogsModal() {
 function switchLogsMode(mode) {
   currentLogsMode = mode;
   currentLogsPage = 1;
+  lastRenderedLog = null;
+  isUserScrolledUp = false;
   
   // Update active tab
   document.querySelectorAll('.mode-tab').forEach(tab => {
@@ -1327,18 +1345,45 @@ function stopRealtimePolling() {
   }
 }
 
+function isUserAtBottom(container, threshold = 50) {
+  const { scrollTop, scrollHeight, clientHeight } = container;
+  return scrollHeight - scrollTop - clientHeight <= threshold;
+}
+
+function scrollToBottom(container) {
+  container.scrollTo({
+    top: container.scrollHeight,
+    behavior: 'smooth'
+  });
+}
+
+function createLogElement(log) {
+  const time = log.timestamp || 'Unknown time';
+  const loggedAt = log.loggedAt ? new Date(log.loggedAt).toLocaleString() : 'Unknown';
+  const lat = log.lat ? parseFloat(log.lat).toFixed(6) : '–';
+  const lng = log.lng ? parseFloat(log.lng).toFixed(6) : '–';
+  
+  return `
+    <div class="log-item">
+      <div class="log-time">${time}</div>
+      <div class="log-coords">Lat: ${lat}, Lng: ${lng}</div>
+      <div class="log-meta">${loggedAt}</div>
+    </div>
+  `;
+}
+
 async function fetchLogs() {
   const uid = getUserId();
   if (!uid) return;
 
   const logsContent = document.getElementById("logsContent");
-  logsContent.innerHTML = '<div class="no-logs">Loading logs...</div>';
-
+  
   try {
     let url;
     if (currentLogsMode === 'realtime') {
-      // For realtime mode, always fetch page 1 with pageSize 1
-      url = `${HISTORY_API_URL}?userId=${encodeURIComponent(uid)}&page=1&pageSize=1`;
+      // For realtime mode, use appropriate page size based on total logs
+      const pageSize = await getOptimalPageSize(uid);
+      url = `${HISTORY_API_URL}?userId=${encodeURIComponent(uid)}&page=1&pageSize=${pageSize}`;
     } else {
       // For full list mode, use pagination
       url = `${HISTORY_API_URL}?userId=${encodeURIComponent(uid)}&page=${currentLogsPage}&pageSize=20`;
@@ -1357,51 +1402,145 @@ async function fetchLogs() {
     } else payload = data;
 
     if (payload.success === false || !payload.logs) {
-      logsContent.innerHTML = '<div class="no-logs">No logs available</div>';
+      if (currentLogsMode === 'realtime' && lastRenderedLog === null) {
+        logsContent.innerHTML = '<div class="no-logs">No logs available</div>';
+      }
       return;
     }
 
     const logs = payload.logs || [];
     totalLogsPages = payload.totalPages || 1;
 
-    // Update pagination info for full list mode
     if (currentLogsMode === 'full') {
+      // Full list mode - replace content with pagination
       document.getElementById("pageInfo").textContent = `Page ${currentLogsPage} of ${totalLogsPages}`;
-      
-      // Update pagination buttons
       document.getElementById("prevBtn").disabled = currentLogsPage <= 1;
       document.getElementById("nextBtn").disabled = currentLogsPage >= totalLogsPages || logs.length === 0;
-    }
 
-    if (logs.length === 0) {
-      logsContent.innerHTML = '<div class="no-logs">No logs yet for this user</div>';
-      return;
-    }
+      if (logs.length === 0) {
+        logsContent.innerHTML = '<div class="no-logs">No logs on this page</div>';
+        return;
+      }
 
-    // Display logs
-    let logsHTML = '';
-    logs.forEach(log => {
-      const time = log.timestamp || 'Unknown time';
-      const loggedAt = log.loggedAt ? new Date(log.loggedAt).toLocaleString() : 'Unknown';
-      const lat = log.lat ? parseFloat(log.lat).toFixed(6) : '–';
-      const lng = log.lng ? parseFloat(log.lng).toFixed(6) : '–';
+      let logsHTML = '';
+      logs.forEach(log => {
+        logsHTML += createLogElement(log);
+      });
       
-      logsHTML += `
-        <div class="log-item">
-          <div class="log-time">${time}</div>
-          <div class="log-coords">Lat: ${lat}, Lng: ${lng}</div>
-          <div class="log-meta">${loggedAt}</div>
-        </div>
-      `;
-    });
-    
-    logsContent.innerHTML = logsHTML;
-    
-    // Scroll to top after updating
-    logsContent.scrollTop = 0;
+      logsContent.innerHTML = logsHTML;
+      logsContent.scrollTop = 0;
+    } else {
+      // Realtime mode - tail-style behavior
+      if (lastRenderedLog === null) {
+        // Initial load - render all logs
+        if (logs.length === 0) {
+          logsContent.innerHTML = '<div class="no-logs">No logs yet for this user</div>';
+          return;
+        }
+
+        let logsHTML = '';
+        logs.forEach(log => {
+          logsHTML += createLogElement(log);
+        });
+        
+        logsContent.innerHTML = logsHTML;
+        
+        // Store reference to the last log
+        if (logs.length > 0) {
+          lastRenderedLog = {
+            loggedAt: logs[logs.length - 1].loggedAt,
+            lat: logs[logs.length - 1].lat,
+            lng: logs[logs.length - 1].lng
+          };
+        }
+        
+        // Scroll to bottom on initial load
+        scrollToBottom(logsContent);
+      } else {
+        // Subsequent polls - append only new logs
+        const newLogs = logs.filter(log => {
+          const logTime = new Date(log.loggedAt).getTime();
+          const lastTime = new Date(lastRenderedLog.loggedAt).getTime();
+          
+          // Only include logs that are newer than the last rendered one
+          // or have different coordinates (in case of same timestamp)
+          return logTime > lastTime || 
+                 (logTime === lastTime && 
+                  (log.lat !== lastRenderedLog.lat || log.lng !== lastRenderedLog.lng));
+        });
+
+        if (newLogs.length > 0) {
+          // Remove "no logs" message if present
+          const noLogsElement = logsContent.querySelector('.no-logs');
+          if (noLogsElement) {
+            noLogsElement.remove();
+          }
+
+          // Remove "new logs" indicator if present
+          const newLogsIndicator = logsContent.querySelector('.new-logs-indicator');
+          if (newLogsIndicator) {
+            newLogsIndicator.remove();
+          }
+
+          // Check if user is at bottom before appending
+          const wasAtBottom = isUserAtBottom(logsContent);
+          
+          // Append new logs
+          newLogs.forEach(log => {
+            logsContent.innerHTML += createLogElement(log);
+          });
+
+          // Update last rendered log reference
+          lastRenderedLog = {
+            loggedAt: newLogs[newLogs.length - 1].loggedAt,
+            lat: newLogs[newLogs.length - 1].lat,
+            lng: newLogs[newLogs.length - 1].lng
+          };
+
+          // Auto-scroll if user was at bottom
+          if (wasAtBottom) {
+            scrollToBottom(logsContent);
+          } else {
+            // Show "new logs" indicator
+            const indicator = document.createElement('div');
+            indicator.className = 'new-logs-indicator';
+            indicator.textContent = `${newLogs.length} new log(s) - click to scroll`;
+            indicator.onclick = () => scrollToBottom(logsContent);
+            logsContent.appendChild(indicator);
+          }
+        }
+      }
+    }
   } catch (error) {
     console.error('Error fetching logs:', error);
-    logsContent.innerHTML = '<div class="no-logs">Error loading logs</div>';
+    if (currentLogsMode === 'realtime' && lastRenderedLog === null) {
+      logsContent.innerHTML = '<div class="no-logs">Error loading logs</div>';
+    }
+  }
+}
+
+async function getOptimalPageSize(uid) {
+  try {
+    const response = await fetch(`${HISTORY_API_URL}?userId=${encodeURIComponent(uid)}&page=1&pageSize=1`);
+    const data = await response.json();
+    
+    let payload;
+    if (data && typeof data === "object" && data.body) {
+      try {
+        payload = typeof data.body === "string" ? JSON.parse(data.body) : data.body;
+      } catch (e) {
+        payload = data.body;
+      }
+    } else payload = data;
+
+    const totalLogs = payload.totalLogs || 0;
+    
+    // If total logs <= 50, fetch all in one go
+    // Otherwise, fetch one at a time for tail behavior
+    return totalLogs <= 50 ? 50 : 1;
+  } catch (error) {
+    console.error('Error getting optimal page size:', error);
+    return 50; // Default to 50 on error
   }
 }
 
@@ -1485,6 +1624,14 @@ document.addEventListener("DOMContentLoaded", () => {
       switchLogsMode(this.dataset.mode);
     });
   });
+
+  // Track user scroll position in logs content
+  const logsContent = document.getElementById('logsContent');
+  if (logsContent) {
+    logsContent.addEventListener('scroll', function() {
+      isUserScrolledUp = !isUserAtBottom(this);
+    });
+  }
 });
 
 // expose for inline handlers
