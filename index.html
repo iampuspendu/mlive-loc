@@ -481,6 +481,35 @@
       padding: 4px;
     }
 
+    .mode-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .mode-tab {
+      flex: 1;
+      padding: 10px 16px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .mode-tab.active {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+    }
+
+    .mode-tab:not(.active):hover {
+      background: #e5e7eb;
+    }
+
     .logs-content {
       flex: 1;
       overflow-y: auto;
@@ -503,16 +532,17 @@
       margin-bottom: 4px;
     }
 
-    .log-details {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      color: #6b7280;
-    }
-
-    .log-details span {
+    .log-coords {
+      color: #374151;
+      margin-bottom: 4px;
       font-family: monospace;
       font-size: 12px;
+    }
+
+    .log-meta {
+      color: #9ca3af;
+      font-size: 11px;
+      font-family: monospace;
     }
 
     .no-logs {
@@ -808,10 +838,17 @@
       <div class="logs-title">Location History Logs</div>
       <button class="close-btn" onclick="closeLogsModal()">×</button>
     </div>
+    
+    <div class="mode-tabs">
+      <button class="mode-tab active" data-mode="realtime">Realtime</button>
+      <button class="mode-tab" data-mode="full">Full Log List</button>
+    </div>
+    
     <div class="logs-content" id="logsContent">
       <div class="no-logs">Loading logs...</div>
     </div>
-    <div class="logs-pagination">
+    
+    <div class="logs-pagination" id="logsPagination" style="display: none;">
       <button class="pagination-btn" id="prevBtn" onclick="changeLogsPage(-1)">Previous</button>
       <div class="pagination-info" id="pageInfo">Page 1 of 1</div>
       <button class="pagination-btn" id="nextBtn" onclick="changeLogsPage(1)">Next</button>
@@ -1232,15 +1269,62 @@ function changeAutoRefresh() {
 /************** LOGS MODAL FUNCTIONS **************/
 let currentLogsPage = 1;
 let totalLogsPages = 1;
+let currentLogsMode = 'realtime';
+let realtimeLogsInterval = null;
 
 function openLogsModal() {
   document.getElementById("logsModal").classList.add("active");
   currentLogsPage = 1;
+  currentLogsMode = 'realtime';
+  
+  // Set active tab
+  document.querySelectorAll('.mode-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.mode === currentLogsMode);
+  });
+  
+  // Show/hide pagination based on mode
+  document.getElementById('logsPagination').style.display = 'none';
+  
   fetchLogs();
+  startRealtimePolling();
 }
 
 function closeLogsModal() {
   document.getElementById("logsModal").classList.remove("active");
+  stopRealtimePolling();
+}
+
+function switchLogsMode(mode) {
+  currentLogsMode = mode;
+  currentLogsPage = 1;
+  
+  // Update active tab
+  document.querySelectorAll('.mode-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.mode === mode);
+  });
+  
+  // Show/hide pagination based on mode
+  document.getElementById('logsPagination').style.display = mode === 'full' ? 'flex' : 'none';
+  
+  if (mode === 'realtime') {
+    startRealtimePolling();
+  } else {
+    stopRealtimePolling();
+  }
+  
+  fetchLogs();
+}
+
+function startRealtimePolling() {
+  stopRealtimePolling();
+  realtimeLogsInterval = setInterval(fetchLogs, 10000); // Poll every 10 seconds
+}
+
+function stopRealtimePolling() {
+  if (realtimeLogsInterval) {
+    clearInterval(realtimeLogsInterval);
+    realtimeLogsInterval = null;
+  }
 }
 
 async function fetchLogs() {
@@ -1251,9 +1335,16 @@ async function fetchLogs() {
   logsContent.innerHTML = '<div class="no-logs">Loading logs...</div>';
 
   try {
-    const response = await fetch(
-      `${HISTORY_API_URL}?userId=${encodeURIComponent(uid)}&page=${currentLogsPage}&pageSize=20`
-    );
+    let url;
+    if (currentLogsMode === 'realtime') {
+      // For realtime mode, always fetch page 1 with pageSize 1
+      url = `${HISTORY_API_URL}?userId=${encodeURIComponent(uid)}&page=1&pageSize=1`;
+    } else {
+      // For full list mode, use pagination
+      url = `${HISTORY_API_URL}?userId=${encodeURIComponent(uid)}&page=${currentLogsPage}&pageSize=20`;
+    }
+
+    const response = await fetch(url);
     const data = await response.json();
 
     let payload;
@@ -1273,42 +1364,41 @@ async function fetchLogs() {
     const logs = payload.logs || [];
     totalLogsPages = payload.totalPages || 1;
 
-    // Update pagination info
-    document.getElementById("pageInfo").textContent = `Page ${currentLogsPage} of ${totalLogsPages}`;
-    
-    // Update pagination buttons
-    document.getElementById("prevBtn").disabled = currentLogsPage <= 1;
-    document.getElementById("nextBtn").disabled = currentLogsPage >= totalLogsPages || logs.length === 0;
+    // Update pagination info for full list mode
+    if (currentLogsMode === 'full') {
+      document.getElementById("pageInfo").textContent = `Page ${currentLogsPage} of ${totalLogsPages}`;
+      
+      // Update pagination buttons
+      document.getElementById("prevBtn").disabled = currentLogsPage <= 1;
+      document.getElementById("nextBtn").disabled = currentLogsPage >= totalLogsPages || logs.length === 0;
+    }
 
     if (logs.length === 0) {
-      logsContent.innerHTML = '<div class="no-logs">No logs on this page</div>';
+      logsContent.innerHTML = '<div class="no-logs">No logs yet for this user</div>';
       return;
     }
 
     // Display logs
     let logsHTML = '';
     logs.forEach(log => {
-      const time = log.timestamp || log.loggedAt || 'Unknown time';
-      const lat = log.latitude ? parseFloat(log.latitude).toFixed(6) : '–';
-      const lng = log.longitude ? parseFloat(log.longitude).toFixed(6) : '–';
-      const accuracy = log.accuracy ? Math.round(log.accuracy) + ' m' : '–';
-      const battery = log.batteryPercentage ? 
-        log.batteryPercentage + '% ' + (log.isCharging ? '⚡' : '') : '–';
+      const time = log.timestamp || 'Unknown time';
+      const loggedAt = log.loggedAt ? new Date(log.loggedAt).toLocaleString() : 'Unknown';
+      const lat = log.lat ? parseFloat(log.lat).toFixed(6) : '–';
+      const lng = log.lng ? parseFloat(log.lng).toFixed(6) : '–';
       
       logsHTML += `
         <div class="log-item">
           <div class="log-time">${time}</div>
-          <div class="log-details">
-            <span>Lat: ${lat}</span>
-            <span>Lng: ${lng}</span>
-            <span>Accuracy: ${accuracy}</span>
-            <span>Battery: ${battery}</span>
-          </div>
+          <div class="log-coords">Lat: ${lat}, Lng: ${lng}</div>
+          <div class="log-meta">${loggedAt}</div>
         </div>
       `;
     });
     
     logsContent.innerHTML = logsHTML;
+    
+    // Scroll to top after updating
+    logsContent.scrollTop = 0;
   } catch (error) {
     console.error('Error fetching logs:', error);
     logsContent.innerHTML = '<div class="no-logs">Error loading logs</div>';
@@ -1387,6 +1477,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === this) {
       closeLogsModal();
     }
+  });
+
+  // Mode tab switching
+  document.querySelectorAll('.mode-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      switchLogsMode(this.dataset.mode);
+    });
   });
 });
 
