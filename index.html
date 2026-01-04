@@ -1175,8 +1175,8 @@
     </div>
     
     <div class="mode-tabs">
-      <button class="mode-tab active" data-mode="realtime">Realtime</button>
-      <button class="mode-tab" data-mode="full">Full Log List</button>
+      <button class="mode-tab active" data-mode="realtime" onclick="switchLogsMode('realtime')">Realtime</button>
+      <button class="mode-tab" data-mode="full" onclick="switchLogsMode('full')">Full Log List</button>
     </div>
     
     <div class="logs-content" id="logsContent">
@@ -1251,7 +1251,7 @@ async function validateUserId(userId) {
     return false;
   }
 }
-
+/*
 async function validateAndInitialize() {
   const loadingText = document.getElementById('loadingText');
   const userId = getUserId();
@@ -1288,8 +1288,22 @@ async function validateAndInitialize() {
     document.getElementById('dashboard').classList.remove('hidden');
     initDashboard();
   }, 500);
+}*/
+async function validateAndInitialize() {
+  const loadingText = document.getElementById('loadingText');
+  const userId = getUserId();
+  
+  // DEVELOPMENT MODE: Skip all redirects
+  console.log('🔧 DEVELOPMENT MODE: Redirects disabled');
+  loadingText.textContent = 'Development mode: Loading dashboard...';
+  
+  // Directly load dashboard without validation
+  setTimeout(() => {
+    document.getElementById('loadingOverlay').style.display = 'none';
+    document.getElementById('dashboard').classList.remove('hidden');
+    initDashboard();
+  }, 500);
 }
-
 /************** BASIC UI HELPERS **************/
 function setText(id, val) {
   const el = document.getElementById(id);
@@ -1423,12 +1437,7 @@ function openEvidenceSheet(type) {
   title.textContent = type === 'photos' ? 'Photos' : 'Audio Recordings';
   
   // Show loading state
-  content.innerHTML = `
-    <div class="loading-state">
-      <div class="loading-spinner"></div>
-      <div>Loading ${type === 'photos' ? 'photos' : 'audio'}...</div>
-    </div>
-  `;
+  content.innerHTML = ``;
   
   // Open sheet
   sheet.classList.add('open');
@@ -2016,11 +2025,14 @@ function openLogsModal() {
   
   // Set active tab
   document.querySelectorAll('.mode-tab').forEach(tab => {
-    tab.classList.toggle('active', tab.dataset.mode === currentLogsMode);
+    tab.classList.toggle('active', tab.getAttribute('data-mode') === 'realtime');
   });
   
   // Show/hide pagination based on mode
   document.getElementById('logsPagination').style.display = 'none';
+  
+  // Clear logs content first
+  document.getElementById('logsContent').innerHTML = '<div class="no-logs">Loading logs...</div>';
   
   fetchLogs();
   startRealtimePolling();
@@ -2039,16 +2051,29 @@ function switchLogsMode(mode) {
   
   // Update active tab
   document.querySelectorAll('.mode-tab').forEach(tab => {
-    tab.classList.toggle('active', tab.dataset.mode === mode);
+    tab.classList.toggle('active', tab.getAttribute('data-mode') === mode);
   });
   
   // Show/hide pagination based on mode
-  document.getElementById('logsPagination').style.display = mode === 'full' ? 'flex' : 'none';
+  const pagination = document.getElementById('logsPagination');
+  const logsContent = document.getElementById('logsContent');
   
-  if (mode === 'realtime') {
-    startRealtimePolling();
-  } else {
+  if (mode === 'full') {
+    pagination.style.display = 'flex';
+    // Clear and show loading for full mode
+    logsContent.innerHTML = '<div class="no-logs">Loading full logs...</div>';
     stopRealtimePolling();
+  } else {
+    pagination.style.display = 'none';
+    // Clear and show loading for realtime mode
+    logsContent.innerHTML = '<div class="no-logs">Starting realtime logs...</div>';
+    startRealtimePolling();
+  }
+  
+  // Clear any new logs indicator
+  const indicator = logsContent.querySelector('.new-logs-indicator');
+  if (indicator) {
+    indicator.remove();
   }
   
   fetchLogs();
@@ -2312,7 +2337,7 @@ function setupEventListeners() {
   // Mode tab switching
   document.querySelectorAll('.mode-tab').forEach(tab => {
     tab.addEventListener('click', function() {
-      switchLogsMode(this.dataset.mode);
+      switchLogsMode(this.getAttribute('data-mode'));
     });
   });
 
@@ -2343,6 +2368,7 @@ window.changeAutoRefresh = changeAutoRefresh;
 window.openLogsModal = openLogsModal;
 window.closeLogsModal = closeLogsModal;
 window.changeLogsPage = changeLogsPage;
+window.switchLogsMode = switchLogsMode;
 window.openEvidenceSubmenu = openEvidenceSubmenu;
 window.closeEvidenceSubmenu = closeEvidenceSubmenu;
 window.openEvidenceSheet = openEvidenceSheet;
