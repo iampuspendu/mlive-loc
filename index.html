@@ -36,6 +36,40 @@
       overflow-x: hidden;
     }
 
+    /* LOADING OVERLAY */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e5e7eb;
+      border-top-color: #2563eb;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    .loading-text {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     /* MAIN MOBILE CARD */
     .mobile-card {
       background: #f5f5f5;
@@ -43,6 +77,10 @@
       display: flex;
       flex-direction: column;
       position: relative;
+    }
+
+    .mobile-card.hidden {
+      display: none;
     }
 
     /* TOP CARD */
@@ -285,6 +323,13 @@
       color: #9ca3af;
     }
 
+    /* Evidence submenu arrow */
+    .evidence-arrow {
+      margin-left: auto;
+      font-size: 14px;
+      color: #9ca3af;
+    }
+
     /* toggle */
     .toggle {
       width: 38px;
@@ -368,6 +413,8 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       flex-shrink: 0;
       transition: all 0.3s ease;
+      position: relative;
+      z-index: 10;
     }
 
     .action-buttons {
@@ -415,6 +462,27 @@
       cursor: not-allowed;
     }
 
+    /* STICKY ACTION BAR */
+    .sticky-action-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      padding: 12px 16px;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+      z-index: 999;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      gap: 12px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .sticky-action-bar.visible {
+      transform: translateY(0);
+    }
+
     .meta-bar {
       padding: 0 12px 12px;
       font-size: 12px;
@@ -425,6 +493,211 @@
       flex-wrap: wrap;
       flex-shrink: 0;
       transition: all 0.3s ease;
+    }
+
+    /* EVIDENCE BOTTOM SHEET */
+    .evidence-sheet {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border-radius: 20px 20px 0 0;
+      box-shadow: 0 -4px 40px rgba(0,0,0,0.2);
+      z-index: 2001;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .evidence-sheet.open {
+      transform: translateY(0);
+    }
+
+    .sheet-header {
+      padding: 20px 20px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sheet-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .sheet-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #6b7280;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+    }
+
+    .sheet-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .photo-item {
+      border-radius: 12px;
+      overflow: hidden;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .photo-item:active {
+      transform: scale(0.98);
+    }
+
+    .photo-thumb {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-info {
+      padding: 10px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .photo-time {
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 2px;
+    }
+
+    .audio-item {
+      padding: 16px;
+      background: #f9fafb;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .audio-play-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: #2563eb;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .audio-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .audio-time {
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 4px;
+    }
+
+    .audio-duration {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .audio-player {
+      width: 100%;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .audio-item.playing .audio-player {
+      display: block;
+    }
+
+    /* FULLSCREEN PHOTO VIEWER */
+    .photo-viewer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.95);
+      z-index: 3000;
+      display: none;
+      flex-direction: column;
+    }
+
+    .photo-viewer.active {
+      display: flex;
+    }
+
+    .viewer-header {
+      padding: 20px;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1;
+    }
+
+    .viewer-title {
+      color: white;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .viewer-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .viewer-image {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .viewer-image img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    /* LOADING STATES */
+    .loading-state, .empty-state, .error-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6b7280;
     }
 
     /* LOGS MODAL */
@@ -591,117 +864,94 @@
       color: #6b7280;
     }
 
-    /* LOGIN MODAL */
-    .login-modal {
+    /* Evidence submenu sheet */
+    .evidence-options-sheet {
       position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-      overflow-y: auto;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border-radius: 20px 20px 0 0;
+      box-shadow: 0 -4px 40px rgba(0,0,0,0.2);
+      z-index: 2002;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       padding: 20px;
     }
 
-    .login-modal.active {
+    .evidence-options-sheet.open {
+      transform: translateY(0);
+    }
+
+    .evidence-option {
       display: flex;
-    }
-
-    .login-box {
-      width: 90%;
-      max-width: 360px;
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 24px 20px;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.3);
-      border: 1px solid #e5e7eb;
-      margin: auto;
-    }
-
-    .login-title {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #111827;
-    }
-
-    .login-sub {
-      font-size: 14px;
-      color: #6b7280;
-      margin-bottom: 20px;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 6px;
-      color: #374151;
-    }
-
-    .form-group input {
-      width: 100%;
-      border-radius: 10px;
-      border: 1px solid #d1d5db;
-      background: #ffffff;
-      padding: 12px 14px;
-      color: #111827;
-      font-size: 16px;
-    }
-
-    .form-group input:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
-    }
-
-    .login-btn {
-      width: 100%;
-      margin-top: 8px;
-      border-radius: 10px;
-      padding: 14px 0;
-      border: none;
-      background: #2563eb;
-      color: #ffffff;
-      font-weight: 600;
-      font-size: 16px;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 16px;
+      border-radius: 12px;
+      background: #f9fafb;
+      margin-bottom: 12px;
       cursor: pointer;
+      border: 1px solid #e5e7eb;
+      transition: all 0.2s;
     }
 
-    .login-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+    .evidence-option:active {
+      background: #e5e7eb;
     }
 
-    .login-error {
-      font-size: 14px;
-      color: #ef4444;
-      margin-top: 8px;
-      min-height: 20px;
-      display: none;
+    .evidence-option:last-child {
+      margin-bottom: 0;
     }
 
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-4px); }
-      50% { transform: translateX(4px); }
-      75% { transform: translateX(-4px); }
-      100% { transform: translateX(0); }
+    .evidence-icon {
+      font-size: 24px;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #2563eb;
+      color: white;
+      border-radius: 12px;
+      flex-shrink: 0;
     }
 
-    .shake {
-      animation: shake 0.25s ease-in-out;
+    .evidence-text {
+      flex: 1;
+    }
+
+    .evidence-title {
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    .evidence-desc {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .sheet-back-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #6b7280;
+      cursor: pointer;
+      padding: 4px;
+      margin-right: 12px;
     }
   </style>
 </head>
 <body>
+  <!-- LOADING OVERLAY -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Validating access...</div>
+  </div>
 
   <!-- MAIN MOBILE CARD -->
-  <div class="mobile-card" id="dashboard">
+  <div class="mobile-card hidden" id="dashboard">
 
     <!-- TOP CARD -->
     <div class="top-card">
@@ -783,6 +1033,15 @@
           </div>
         </div>
 
+        <!-- Evidence Menu Option -->
+        <div class="opt-row" onclick="openEvidenceSubmenu()">
+          <div class="opt-left">
+            <span class="opt-icon">📁</span>
+            <div>Evidence</div>
+          </div>
+          <div class="evidence-arrow">▶</div>
+        </div>
+
         <div class="opt-row">
           <div class="opt-left">
             <span class="opt-icon">⏱️</span>
@@ -791,8 +1050,8 @@
           <div class="opt-right-text">
             <select id="autoRefreshSelect" style="font-size:12px;padding:4px 6px;border-radius:6px;border:1px solid #d1d5db;background:#ffffff;color:#374151;" onchange="changeAutoRefresh()">
               <option value="0">Off</option>
-              <option value="5000" selected>5 sec</option>
-              <option value="10000">10 sec</option>
+              <option value="15000" selected>15 sec</option>
+              <option value="30000">30 sec</option>
               <option value="60000">1 min</option>
               <option value="900000">15 min</option>
             </select>
@@ -843,6 +1102,70 @@
     </div>
   </div>
 
+  <!-- STICKY ACTION BAR -->
+  <div class="sticky-action-bar" id="stickyActionBar">
+    <button class="action-btn btn-refresh" onclick="refreshNow()">
+      <span>⟳</span>
+      <span>Refresh</span>
+    </button>
+    <button class="action-btn btn-directions disabled" id="stickyDirBtn" onclick="openDirections()">
+      <span>🧭</span>
+      <span>Get Directions</span>
+    </button>
+  </div>
+
+  <!-- Evidence Submenu Bottom Sheet -->
+  <div class="evidence-options-sheet" id="evidenceOptionsSheet">
+    <div class="sheet-header">
+      <div style="display: flex; align-items: center;">
+        <button class="sheet-back-btn" onclick="closeEvidenceSubmenu()">←</button>
+        <div class="sheet-title">Evidence</div>
+      </div>
+      <button class="sheet-close" onclick="closeEvidenceSubmenu()">×</button>
+    </div>
+    <div class="sheet-content">
+      <div class="evidence-option" onclick="openEvidenceSheet('photos')">
+        <div class="evidence-icon">📷</div>
+        <div class="evidence-text">
+          <div class="evidence-title">Photos</div>
+          <div class="evidence-desc">View uploaded photos and images</div>
+        </div>
+      </div>
+      <div class="evidence-option" onclick="openEvidenceSheet('audio')">
+        <div class="evidence-icon">🎤</div>
+        <div class="evidence-text">
+          <div class="evidence-title">Audio</div>
+          <div class="evidence-desc">Listen to audio recordings</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Evidence Content Bottom Sheet -->
+  <div class="evidence-sheet" id="evidenceSheet">
+    <div class="sheet-header">
+      <div style="display: flex; align-items: center;">
+        <button class="sheet-back-btn" onclick="goBackToEvidenceOptions()">←</button>
+        <div class="sheet-title" id="evidenceSheetTitle">Evidence</div>
+      </div>
+      <button class="sheet-close" onclick="closeEvidenceSheet()">×</button>
+    </div>
+    <div class="sheet-content" id="evidenceContent">
+      <!-- Content will be loaded here dynamically -->
+    </div>
+  </div>
+
+  <!-- Fullscreen Photo Viewer -->
+  <div class="photo-viewer" id="photoViewer">
+    <div class="viewer-header">
+      <div class="viewer-title" id="photoViewerTitle">Photo</div>
+      <button class="viewer-close" onclick="closePhotoViewer()">×</button>
+    </div>
+    <div class="viewer-image" id="viewerImageContainer">
+      <!-- Photo will be loaded here -->
+    </div>
+  </div>
+
 <!-- LOGS MODAL -->
 <div class="logs-modal" id="logsModal">
   <div class="logs-box" id="logsBox">
@@ -868,23 +1191,6 @@
   </div>
 </div>
 
-<!-- LOGIN MODAL -->
-<div class="login-modal" id="loginModal">
-  <div class="login-box" id="loginBox">
-    <div class="login-title">Public Safety System</div>
-    <div class="login-sub">Enter your assigned User ID to access live location.</div>
-
-    <form id="loginForm">
-      <div class="form-group">
-        <label for="userIdInput">User ID</label>
-        <input type="text" id="userIdInput" placeholder="example-user-01" autocomplete="off" required />
-      </div>
-      <button type="submit" class="login-btn" id="loginBtn">Access Dashboard</button>
-      <div id="loginError" class="login-error">User not found</div>
-    </form>
-  </div>
-</div>
-
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -892,7 +1198,15 @@
 /************** CONFIG **************/
 const API_URL = "https://jwki58wsv8.execute-api.ap-south-1.amazonaws.com/prod/location";
 const HISTORY_API_URL = "https://jwki58wsv8.execute-api.ap-south-1.amazonaws.com/prod/location/history";
+const PHOTOS_API_URL = "https://jwki58wsv8.execute-api.ap-south-1.amazonaws.com/prod/media/photos";
+const AUDIO_API_URL = "https://jwki58wsv8.execute-api.ap-south-1.amazonaws.com/prod/media/audio";
+const DESKTOP_SITE_URL = "https://track.themidb.workers.dev/";
 const UNAVAIL = "–";
+
+/************** DEVICE DETECTION **************/
+function isMobileDevice() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
 
 /************** URL & AUTH HELPERS **************/
 function getUrlParams() {
@@ -904,11 +1218,76 @@ function getUserId() {
   return p.userId || p.userid || p.id || null;
 }
 
-function updateUrlUser(userId) {
-  const u = new URL(window.location);
-  if (userId) u.searchParams.set("userId", userId);
-  else u.searchParams.delete("userId");
-  window.history.replaceState({}, "", u);
+/************** REDIRECTION FUNCTIONS **************/
+function redirectToDesktopSite(userId = null) {
+  const url = userId ? `${DESKTOP_SITE_URL}?userId=${encodeURIComponent(userId)}` : DESKTOP_SITE_URL;
+  window.location.href = url;
+}
+
+async function validateUserId(userId) {
+  try {
+    const response = await fetch(`${API_URL}?userId=${encodeURIComponent(userId)}`);
+    const data = await response.json();
+    
+    let payload;
+    if (data && typeof data === "object" && data.body) {
+      try {
+        payload = typeof data.body === "string" ? JSON.parse(data.body) : data.body;
+      } catch (e) {
+        payload = data.body;
+      }
+    } else {
+      payload = data;
+    }
+    
+    // Check if user is valid based on API response
+    if (payload.success === true || (payload.data && Object.keys(payload.data).length > 0)) {
+      return true; // Valid user
+    }
+    
+    return false; // Invalid user
+  } catch (error) {
+    console.error('Error validating user:', error);
+    return false;
+  }
+}
+
+async function validateAndInitialize() {
+  const loadingText = document.getElementById('loadingText');
+  const userId = getUserId();
+  
+  // CASE 1: No userId in URL
+  if (!userId) {
+    loadingText.textContent = 'No user ID provided. Redirecting...';
+    setTimeout(() => redirectToDesktopSite(), 1000);
+    return;
+  }
+  
+  // CASE 3: Desktop device detection
+  if (!isMobileDevice()) {
+    loadingText.textContent = 'Desktop device detected. Redirecting...';
+    setTimeout(() => redirectToDesktopSite(userId), 1000);
+    return;
+  }
+  
+  // CASE 2: Validate userId via API
+  loadingText.textContent = 'Validating user ID...';
+  
+  const isValid = await validateUserId(userId);
+  
+  if (!isValid) {
+    loadingText.textContent = 'Invalid user ID. Redirecting...';
+    setTimeout(() => redirectToDesktopSite(), 1000);
+    return;
+  }
+  
+  // Valid mobile user - proceed to initialize dashboard
+  loadingText.textContent = 'Loading dashboard...';
+  setTimeout(() => {
+    document.getElementById('loadingOverlay').style.display = 'none';
+    document.getElementById('dashboard').classList.remove('hidden');
+    initDashboard();
+  }, 500);
 }
 
 /************** BASIC UI HELPERS **************/
@@ -965,57 +1344,7 @@ function fallbackShare(url) {
 
 function showUserInfo() {
   const uid = getUserId();
-  alert(`Current User ID: ${uid || "none"}\nMobile Tracking UI v2.0`);
-}
-
-/************** LOGIN FLOW **************/
-async function verifyAndLogin(userId) {
-  const btn = document.getElementById("loginBtn");
-  const errorMsg = document.getElementById("loginError");
-  const box = document.getElementById("loginBox");
-
-  errorMsg.style.display = "none";
-  btn.disabled = true;
-  btn.textContent = "Verifying…";
-  box.classList.remove("shake");
-
-  try {
-    const resp = await fetch(`${API_URL}?userId=${encodeURIComponent(userId)}`);
-    const json = await resp.json();
-
-    let payload;
-    if (json && typeof json === "object" && json.body) {
-      try {
-        payload =
-          typeof json.body === "string" ? JSON.parse(json.body) : json.body;
-      } catch (e) {
-        payload = json.body;
-      }
-    } else payload = json;
-
-    if (
-      payload.success === false ||
-      payload.success === "false" ||
-      payload.error ||
-      (!payload && !payload.data)
-    ) {
-      throw new Error("User not found");
-    }
-
-    // success
-    updateUrlUser(userId);
-    document.getElementById("loginModal").classList.remove("active");
-    initDashboard();
-  } catch (e) {
-    console.log("Login verify failed:", e);
-    errorMsg.style.display = "block";
-    errorMsg.textContent = "User not found";
-    box.classList.add("shake");
-    setTimeout(() => box.classList.remove("shake"), 350);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Access Dashboard";
-  }
+  alert(`Current User ID: ${uid || "none"}\nMobile Tracking UI v2.0\nEvidence features available`);
 }
 
 /************** MAP SETUP **************/
@@ -1065,8 +1394,370 @@ function initMap() {
 let isAutoScroll = true; // Default to ON
 let showHistory = false;
 let expandedMap = false;
-let autoRefreshIntervalMs = 5000;
+let autoRefreshIntervalMs = 15000; // Default to 15 seconds
 let autoRefreshTimer = null;
+let currentEvidenceType = null;
+let currentPlayingAudio = null;
+let photosCache = {};
+let audioCache = {};
+
+/************** EVIDENCE SUBMENU FUNCTIONS **************/
+function openEvidenceSubmenu() {
+  closeOptionsMenu();
+  document.getElementById('evidenceOptionsSheet').classList.add('open');
+}
+
+function closeEvidenceSubmenu() {
+  document.getElementById('evidenceOptionsSheet').classList.remove('open');
+}
+
+function openEvidenceSheet(type) {
+  currentEvidenceType = type;
+  closeEvidenceSubmenu();
+  
+  const sheet = document.getElementById('evidenceSheet');
+  const title = document.getElementById('evidenceSheetTitle');
+  const content = document.getElementById('evidenceContent');
+  
+  // Set title
+  title.textContent = type === 'photos' ? 'Photos' : 'Audio Recordings';
+  
+  // Show loading state
+  content.innerHTML = `
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <div>Loading ${type === 'photos' ? 'photos' : 'audio'}...</div>
+    </div>
+  `;
+  
+  // Open sheet
+  sheet.classList.add('open');
+  
+  // Load data
+  if (type === 'photos') {
+    loadPhotos();
+  } else {
+    loadAudio();
+  }
+}
+
+function goBackToEvidenceOptions() {
+  document.getElementById('evidenceSheet').classList.remove('open');
+  setTimeout(() => {
+    openEvidenceSubmenu();
+  }, 300);
+}
+
+function closeEvidenceSheet() {
+  document.getElementById('evidenceSheet').classList.remove('open');
+  // Stop audio if playing
+  if (currentPlayingAudio) {
+    currentPlayingAudio.pause();
+    currentPlayingAudio = null;
+  }
+}
+
+/************** PHOTOS FUNCTIONS **************/
+async function loadPhotos() {
+  const uid = getUserId();
+  if (!uid) {
+    showEvidenceError('User ID required');
+    return;
+  }
+
+  const content = document.getElementById('evidenceContent');
+  
+  try {
+    // Check cache first
+    const cacheKey = `photos_${uid}`;
+    if (photosCache[cacheKey]) {
+      renderPhotos(photosCache[cacheKey]);
+      return;
+    }
+    
+    // Fetch from API
+    const url = `${PHOTOS_API_URL}?userId=${encodeURIComponent(uid)}&page=1&pageSize=20`;
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    let payload;
+    if (data && typeof data === "object" && data.body) {
+      try {
+        payload = typeof data.body === "string" ? JSON.parse(data.body) : data.body;
+      } catch (e) {
+        payload = data.body;
+      }
+    } else payload = data;
+    
+    if (payload.success === false || !payload.photos || payload.photos.length === 0) {
+      content.innerHTML = `
+        <div class="empty-state">
+          <div style="font-size: 32px; margin-bottom: 12px;">📷</div>
+          <div>No photos available</div>
+        </div>
+      `;
+      return;
+    }
+    
+    // Cache results
+    photosCache[cacheKey] = payload.photos;
+    
+    // Render photos
+    renderPhotos(payload.photos);
+    
+  } catch (error) {
+    console.error('Error loading photos:', error);
+    showEvidenceError('Failed to fetch photos');
+  }
+}
+
+function renderPhotos(photos) {
+  const content = document.getElementById('evidenceContent');
+  
+  let html = '<div class="evidence-grid">';
+  
+  photos.forEach((photo, index) => {
+    const time = photo.loggedAt ? new Date(photo.loggedAt).toLocaleString() : 'Unknown time';
+    const thumbnail = photo.thumbnailUrl || photo.url || '';
+    const fullImage = photo.url || thumbnail;
+    
+    html += `
+      <div class="photo-item" onclick="openPhotoViewer('${fullImage}', '${time}')">
+        <img src="${thumbnail || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoGVpdGg9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNGM0Y0RjYiLz48cGF0aCBkPSJNNzUgNTBDNzUgNjMuODA3NiA4Ni4xOTI0IDc1IDEwMCA3NUMxMTMuODA3NiA3NSAxMjUgNjMuODA3NiAxMjUgNTBDMTI1IDM2LjE5MjQgMTEzLjgwNzYgMjUgMTAwIDI1Qzg2LjE5MjQgMjUgNzUgMzYuMTkyNCA3NSA1MFoiIGZpbGw9IiNEOEQ5REIiLz48cGF0aCBkPSJNNTAgMTAwSDE1MFYxMjVINTBWMTAwWiIgZmlsbD0iI0Q4RDlEQiIvPjwvc3ZnPg=='}" 
+             alt="Photo ${index + 1}" 
+             class="photo-thumb"
+             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNGM0Y0RjYiLz48cGF0aCBkPSJNNzUgNTBDNzUgNjMuODA3NiA4Ni4xOTI0IDc1IDEwMCA3NUMxMTMuODA3NiA3NSAxMjUgNjMuODA3NiAxMjUgNTBDMTI1IDM2LjE5MjQgMTEzLjgwNzYgMjUgMTAwIDI1Qzg2LjE5MjQgMjUgNzUgMzYuMTkyNCA3NSA1MFoiIGZpbGw9IiNEOEQ5REIiLz48cGF0aCBkPSJNNTAgMTAwSDE1MFYxMjVINTBWMTAwWiIgZmlsbD0iI0Q4RDlEQiIvPjwvc3ZnPg=='">
+        <div class="photo-info">
+          <div class="photo-time">${time}</div>
+        </div>
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  content.innerHTML = html;
+}
+
+function openPhotoViewer(imageUrl, title) {
+  const viewer = document.getElementById('photoViewer');
+  const container = document.getElementById('viewerImageContainer');
+  const titleEl = document.getElementById('photoViewerTitle');
+  
+  titleEl.textContent = title || 'Photo';
+  
+  // Show loading
+  container.innerHTML = '<div class="loading-spinner" style="margin: auto;"></div>';
+  
+  const img = new Image();
+  img.onload = function() {
+    container.innerHTML = '';
+    container.appendChild(img);
+  };
+  img.onerror = function() {
+    container.innerHTML = '<div style="color: white; text-align: center;">Failed to load image</div>';
+  };
+  img.src = imageUrl;
+  img.style.maxWidth = '100%';
+  img.style.maxHeight = '100%';
+  img.style.objectFit = 'contain';
+  
+  viewer.classList.add('active');
+}
+
+function closePhotoViewer() {
+  document.getElementById('photoViewer').classList.remove('active');
+}
+
+/************** AUDIO FUNCTIONS **************/
+async function loadAudio() {
+  const uid = getUserId();
+  if (!uid) {
+    showEvidenceError('User ID required');
+    return;
+  }
+
+  const content = document.getElementById('evidenceContent');
+  
+  try {
+    // Check cache first
+    const cacheKey = `audio_${uid}`;
+    if (audioCache[cacheKey]) {
+      renderAudio(audioCache[cacheKey]);
+      return;
+    }
+    
+    // Fetch from API
+    const url = `${AUDIO_API_URL}?userId=${encodeURIComponent(uid)}&page=1&pageSize=20`;
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    let payload;
+    if (data && typeof data === "object" && data.body) {
+      try {
+        payload = typeof data.body === "string" ? JSON.parse(data.body) : data.body;
+      } catch (e) {
+        payload = data.body;
+      }
+    } else payload = data;
+    
+    if (payload.success === false || !payload.audio || payload.audio.length === 0) {
+      content.innerHTML = `
+        <div class="empty-state">
+          <div style="font-size: 32px; margin-bottom: 12px;">🎤</div>
+          <div>No audio recordings available</div>
+        </div>
+      `;
+      return;
+    }
+    
+    // Cache results
+    audioCache[cacheKey] = payload.audio;
+    
+    // Render audio
+    renderAudio(payload.audio);
+    
+  } catch (error) {
+    console.error('Error loading audio:', error);
+    showEvidenceError('Failed to fetch audio');
+  }
+}
+
+function renderAudio(audioList) {
+  const content = document.getElementById('evidenceContent');
+  
+  let html = '';
+  
+  audioList.forEach((audio, index) => {
+    const time = audio.loggedAt ? new Date(audio.loggedAt).toLocaleString() : 'Unknown time';
+    const audioUrl = audio.url || '';
+    const duration = audio.duration ? formatDuration(audio.duration) : 'Unknown';
+    
+    html += `
+      <div class="audio-item" id="audioItem${index}">
+        <button class="audio-play-btn" onclick="toggleAudioPlayback(${index}, '${audioUrl}')">
+          ▶
+        </button>
+        <div class="audio-info">
+          <div class="audio-time">${time}</div>
+          <div class="audio-duration">Duration: ${duration}</div>
+          <audio class="audio-player" controls onended="onAudioEnded(${index})">
+            <source src="${audioUrl}" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+      </div>
+    `;
+  });
+  
+  content.innerHTML = html;
+}
+
+function toggleAudioPlayback(index, audioUrl) {
+  const audioItem = document.getElementById(`audioItem${index}`);
+  const audioPlayer = audioItem.querySelector('.audio-player');
+  const playBtn = audioItem.querySelector('.audio-play-btn');
+  
+  // Stop currently playing audio
+  if (currentPlayingAudio && currentPlayingAudio !== audioPlayer) {
+    currentPlayingAudio.pause();
+    const prevItem = currentPlayingAudio.closest('.audio-item');
+    if (prevItem) {
+      prevItem.classList.remove('playing');
+      const prevBtn = prevItem.querySelector('.audio-play-btn');
+      if (prevBtn) prevBtn.textContent = '▶';
+    }
+  }
+  
+  if (audioPlayer.paused) {
+    // Play audio
+    audioPlayer.play();
+    audioItem.classList.add('playing');
+    playBtn.textContent = '⏸';
+    currentPlayingAudio = audioPlayer;
+  } else {
+    // Pause audio
+    audioPlayer.pause();
+    audioItem.classList.remove('playing');
+    playBtn.textContent = '▶';
+    currentPlayingAudio = null;
+  }
+}
+
+function onAudioEnded(index) {
+  const audioItem = document.getElementById(`audioItem${index}`);
+  if (audioItem) {
+    audioItem.classList.remove('playing');
+    const playBtn = audioItem.querySelector('.audio-play-btn');
+    if (playBtn) playBtn.textContent = '▶';
+  }
+  currentPlayingAudio = null;
+}
+
+function formatDuration(seconds) {
+  if (!seconds) return '0:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+function showEvidenceError(message) {
+  const content = document.getElementById('evidenceContent');
+  content.innerHTML = `
+    <div class="error-state">
+      <div style="font-size: 32px; margin-bottom: 12px;">⚠️</div>
+      <div>${message}</div>
+    </div>
+  `;
+}
+
+/************** STICKY BUTTONS FUNCTIONS **************/
+function initStickyButtons() {
+  const actionBar = document.getElementById('actionBar');
+  const stickyBar = document.getElementById('stickyActionBar');
+  
+  // Create Intersection Observer
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // Original buttons are visible, hide sticky bar
+        stickyBar.classList.remove('visible');
+      } else {
+        // Original buttons are not visible, show sticky bar
+        stickyBar.classList.add('visible');
+      }
+    });
+  }, {
+    threshold: 0.1, // Trigger when 10% of element is visible
+    rootMargin: '0px 0px -50px 0px' // Add bottom margin
+  });
+  
+  // Start observing the original action bar
+  observer.observe(actionBar);
+  
+  // Update sticky button states when original buttons change
+  const updateStickyButtons = () => {
+    const originalDirBtn = document.getElementById('dirBtn');
+    const stickyDirBtn = document.getElementById('stickyDirBtn');
+    
+    // Sync disabled state
+    stickyDirBtn.disabled = originalDirBtn.disabled;
+    if (originalDirBtn.disabled) {
+      stickyDirBtn.classList.add('disabled');
+    } else {
+      stickyDirBtn.classList.remove('disabled');
+    }
+  };
+  
+  // Observe changes to the original button's disabled state
+  const dirBtnObserver = new MutationObserver(updateStickyButtons);
+  dirBtnObserver.observe(document.getElementById('dirBtn'), {
+    attributes: true,
+    attributeFilter: ['class', 'disabled']
+  });
+  
+  // Initial sync
+  updateStickyButtons();
+}
 
 /************** FETCH + APPLY **************/
 async function fetchAndApply() {
@@ -1196,6 +1887,7 @@ async function fetchAndApply() {
 
     // directions button
     setBtnDisabled(document.getElementById("dirBtn"), false);
+    setBtnDisabled(document.getElementById("stickyDirBtn"), false);
   } catch (err) {
     console.error("Fetch error:", err);
     applyUnavailableUI();
@@ -1220,6 +1912,7 @@ function applyUnavailableUI(data) {
   setText("lastUpdated", UNAVAIL);
 
   setBtnDisabled(document.getElementById("dirBtn"), true);
+  setBtnDisabled(document.getElementById("stickyDirBtn"), true);
 }
 
 /************** ACTION BUTTONS **************/
@@ -1243,6 +1936,10 @@ function toggleOptionsMenu(event) {
   }
   const menu = document.getElementById("optionsMenu");
   menu.classList.toggle("visible");
+}
+
+function closeOptionsMenu() {
+  document.getElementById("optionsMenu").classList.remove("visible");
 }
 
 function toggleAutoScroll() {
@@ -1289,10 +1986,14 @@ function toggleExpandMap() {
 function changeAutoRefresh() {
   const val = Number(document.getElementById("autoRefreshSelect").value);
   autoRefreshIntervalMs = val;
+  
+  // Stop any existing timer
   if (autoRefreshTimer) {
     clearInterval(autoRefreshTimer);
     autoRefreshTimer = null;
   }
+  
+  // Start new timer if value is > 0 (not "Off")
   if (autoRefreshIntervalMs > 0) {
     autoRefreshTimer = setInterval(fetchAndApply, autoRefreshIntervalMs);
   }
@@ -1534,39 +2235,33 @@ function initDashboard() {
     document.getElementById("metaUser").textContent = `User: ${uid}`;
   }
 
+  // Initialize map
+  initMap();
+  
   // Set auto scroll to ON by default
   document.getElementById("autoScrollToggle").classList.add("on");
   isAutoScroll = true;
 
-  // default auto refresh 5 sec
-  document.getElementById("autoRefreshSelect").value = "5000";
-  autoRefreshIntervalMs = 5000;
+  // Set auto refresh default to 15 sec
+  document.getElementById("autoRefreshSelect").value = "15000";
+  autoRefreshIntervalMs = 15000;
+  
+  // Start auto refresh timer
   if (!autoRefreshTimer) {
     autoRefreshTimer = setInterval(fetchAndApply, autoRefreshIntervalMs);
   }
+  
+  // Initialize sticky buttons
+  initStickyButtons();
+  
+  // Initial data fetch
   fetchAndApply();
+  
+  // Set up event listeners
+  setupEventListeners();
 }
 
-/************** DOM READY **************/
-document.addEventListener("DOMContentLoaded", () => {
-  initMap();
-
-  const uid = getUserId();
-
-  // login form handler
-  document.getElementById("loginForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const val = document.getElementById("userIdInput").value.trim();
-    if (val) verifyAndLogin(val);
-  });
-
-  if (uid) {
-    document.getElementById("loginModal").classList.remove("active");
-    initDashboard();
-  } else {
-    document.getElementById("loginModal").classList.add("active");
-  }
-
+function setupEventListeners() {
   // Set up menu toggle with proper event handling
   const menuFab = document.getElementById("menuFab");
   const optionsMenu = document.getElementById("optionsMenu");
@@ -1583,13 +2278,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Close menu when clicking anywhere else
   document.addEventListener("click", function() {
-    optionsMenu.classList.remove("visible");
+    closeOptionsMenu();
   });
 
   // Close logs modal when clicking on backdrop
   document.getElementById("logsModal").addEventListener("click", function(e) {
     if (e.target === this) {
       closeLogsModal();
+    }
+  });
+
+  // Close evidence submenu when clicking on backdrop
+  document.getElementById("evidenceOptionsSheet").addEventListener("click", function(e) {
+    if (e.target === this) {
+      closeEvidenceSubmenu();
+    }
+  });
+
+  // Close evidence sheet when clicking on backdrop
+  document.getElementById("evidenceSheet").addEventListener("click", function(e) {
+    if (e.target === this) {
+      closeEvidenceSheet();
+    }
+  });
+
+  // Close photo viewer when clicking on backdrop
+  document.getElementById("photoViewer").addEventListener("click", function(e) {
+    if (e.target === this) {
+      closePhotoViewer();
     }
   });
 
@@ -1607,6 +2323,12 @@ document.addEventListener("DOMContentLoaded", () => {
       isUserScrolledUp = !isUserAtBottom(this);
     });
   }
+}
+
+/************** DOM READY **************/
+document.addEventListener("DOMContentLoaded", () => {
+  // Start validation and initialization flow
+  validateAndInitialize();
 });
 
 // expose for inline handlers
@@ -1621,6 +2343,15 @@ window.changeAutoRefresh = changeAutoRefresh;
 window.openLogsModal = openLogsModal;
 window.closeLogsModal = closeLogsModal;
 window.changeLogsPage = changeLogsPage;
+window.openEvidenceSubmenu = openEvidenceSubmenu;
+window.closeEvidenceSubmenu = closeEvidenceSubmenu;
+window.openEvidenceSheet = openEvidenceSheet;
+window.goBackToEvidenceOptions = goBackToEvidenceOptions;
+window.closeEvidenceSheet = closeEvidenceSheet;
+window.openPhotoViewer = openPhotoViewer;
+window.closePhotoViewer = closePhotoViewer;
+window.toggleAudioPlayback = toggleAudioPlayback;
+window.onAudioEnded = onAudioEnded;
 </script>
 </body>
 </html>
