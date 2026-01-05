@@ -585,59 +585,105 @@
       margin-bottom: 2px;
     }
 
+    /* AUDIO ITEM - FIXED (From Desktop) */
     .audio-item {
-      padding: 16px;
-      background: #f9fafb;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      margin-bottom: 12px;
+      padding: 12px 14px;
       display: flex;
       align-items: center;
       gap: 12px;
+      transition: all 0.15s ease;
+      cursor: pointer;
+      border-bottom: 1px solid #e5e7eb;
+      background: #ffffff;
+      border-radius: 8px;
+      margin-bottom: 8px;
     }
 
-    .audio-play-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      border: none;
-      background: #2563eb;
-      color: white;
+    .audio-item:hover {
+      background: #f8f9fa;
+    }
+
+    .audio-item:last-child {
+      border-bottom: none;
+    }
+
+    .audio-item.playing {
+      background: rgba(37, 99, 235, 0.08);
+      border: 1px solid rgba(37, 99, 235, 0.2);
+    }
+
+    .audio-item.playing .media-action {
+      background: #efefef;
+      color: rgb(0, 0, 0);
+    }
+
+    .media-thumbnail {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: rgba(37, 99, 235, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
     }
 
-    .audio-info {
+    .media-thumbnail.audio {
+      background: rgba(37, 99, 235, 0.1);
+    }
+
+    .media-thumbnail.audio i {
+      width: 18px;
+      height: 18px;
+      color: #2563eb;
+    }
+
+    .media-info {
       flex: 1;
       min-width: 0;
     }
 
-    .audio-time {
-      font-size: 14px;
+    .media-name {
+      color: #111827;
+      font-size: 13px;
       font-weight: 500;
-      color: #374151;
       margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .audio-duration {
-      font-size: 12px;
+    .media-time {
       color: #6b7280;
+      font-size: 11px;
+      font-family: monospace;
     }
 
-    .audio-player {
-      width: 100%;
-      margin-top: 8px;
-      display: none;
+    .media-action {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
     }
 
-    .audio-item.playing .audio-player {
-      display: block;
+    .media-action:hover {
+      background: #e5e7eb;
     }
 
-    /* FULLSCREEN PHOTO VIEWER */
+    .media-action i {
+      width: 14px;
+      height: 14px;
+      color: #374151;
+    }
+
+    /* FULLSCREEN PHOTO VIEWER - FIXED */
     .photo-viewer {
       position: fixed;
       top: 0;
@@ -661,6 +707,7 @@
       justify-content: space-between;
       align-items: center;
       z-index: 1;
+      flex-shrink: 0;
     }
 
     .viewer-title {
@@ -676,6 +723,7 @@
       font-size: 24px;
       cursor: pointer;
       padding: 4px;
+      z-index: 2;
     }
 
     .viewer-image {
@@ -684,6 +732,7 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
+      position: relative;
     }
 
     .viewer-image img {
@@ -947,7 +996,7 @@
   <!-- LOADING OVERLAY -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner"></div>
-    <div class="loading-text" id="loadingText">Validating access...</div>
+    <div class="loading-text" id="loadingText">Loading...</div>
   </div>
 
   <!-- MAIN MOBILE CARD -->
@@ -1251,59 +1300,71 @@ async function validateUserId(userId) {
     return false;
   }
 }
-/*
+
+/************** TOGGLE BETWEEN DEVELOPMENT AND PRODUCTION MODE **************/
+// EASY SWITCH: Set to true for DEVELOPMENT (no redirects), false for PRODUCTION (with redirects)
+const DEVELOPMENT_MODE = true; // ← CHANGE THIS TO false FOR PRODUCTION
+
+/************** INITIALIZATION - WITH TOGGLE **************/
 async function validateAndInitialize() {
   const loadingText = document.getElementById('loadingText');
   const userId = getUserId();
   
+  // ================== DEVELOPMENT MODE ==================
+  if (DEVELOPMENT_MODE) {
+    console.log('🔧 DEVELOPMENT MODE: Redirects disabled');
+    loadingText.textContent = 'Development mode: Loading dashboard...';
+    
+    // Directly load dashboard without validation
+    setTimeout(() => {
+      document.getElementById('loadingOverlay').style.display = 'none';
+      document.getElementById('dashboard').classList.remove('hidden');
+      initDashboard();
+    }, 500);
+    return;
+  }
+  
+  // ================== PRODUCTION MODE ==================
   // CASE 1: No userId in URL
   if (!userId) {
     loadingText.textContent = 'No user ID provided. Redirecting...';
-    setTimeout(() => redirectToDesktopSite(), 1000);
+    setTimeout(() => redirectToDesktopSite(), 1500);
     return;
   }
   
-  // CASE 3: Desktop device detection
+  // CASE 2: Desktop device detection
   if (!isMobileDevice()) {
     loadingText.textContent = 'Desktop device detected. Redirecting...';
-    setTimeout(() => redirectToDesktopSite(userId), 1000);
+    setTimeout(() => redirectToDesktopSite(userId), 1500);
     return;
   }
   
-  // CASE 2: Validate userId via API
+  // CASE 3: Validate userId via API
   loadingText.textContent = 'Validating user ID...';
   
-  const isValid = await validateUserId(userId);
-  
-  if (!isValid) {
-    loadingText.textContent = 'Invalid user ID. Redirecting...';
-    setTimeout(() => redirectToDesktopSite(), 1000);
-    return;
+  try {
+    const isValid = await validateUserId(userId);
+    
+    if (!isValid) {
+      loadingText.textContent = 'Invalid user ID. Redirecting...';
+      setTimeout(() => redirectToDesktopSite(), 1500);
+      return;
+    }
+    
+    // Valid mobile user - proceed to initialize dashboard
+    loadingText.textContent = 'Loading dashboard...';
+    setTimeout(() => {
+      document.getElementById('loadingOverlay').style.display = 'none';
+      document.getElementById('dashboard').classList.remove('hidden');
+      initDashboard();
+    }, 500);
+  } catch (error) {
+    console.error('Validation error:', error);
+    loadingText.textContent = 'Error validating. Redirecting...';
+    setTimeout(() => redirectToDesktopSite(), 1500);
   }
-  
-  // Valid mobile user - proceed to initialize dashboard
-  loadingText.textContent = 'Loading dashboard...';
-  setTimeout(() => {
-    document.getElementById('loadingOverlay').style.display = 'none';
-    document.getElementById('dashboard').classList.remove('hidden');
-    initDashboard();
-  }, 500);
-}*/
-async function validateAndInitialize() {
-  const loadingText = document.getElementById('loadingText');
-  const userId = getUserId();
-  
-  // DEVELOPMENT MODE: Skip all redirects
-  console.log('🔧 DEVELOPMENT MODE: Redirects disabled');
-  loadingText.textContent = 'Development mode: Loading dashboard...';
-  
-  // Directly load dashboard without validation
-  setTimeout(() => {
-    document.getElementById('loadingOverlay').style.display = 'none';
-    document.getElementById('dashboard').classList.remove('hidden');
-    initDashboard();
-  }, 500);
 }
+
 /************** BASIC UI HELPERS **************/
 function setText(id, val) {
   const el = document.getElementById(id);
@@ -1332,7 +1393,7 @@ function setBtnDisabled(btnEl, disabled) {
   else btnEl.classList.remove("disabled");
 }
 
-/************** SHARE / INFO / LOGOUT **************/
+/************** SHARE / INFO **************/
 function shareUrl() {
   const url = window.location.href;
   if (navigator.share) {
@@ -1406,14 +1467,12 @@ function initMap() {
 
 /************** DASHBOARD STATE **************/
 let isAutoScroll = true; // Default to ON
-let showHistory = false;
 let expandedMap = false;
 let autoRefreshIntervalMs = 15000; // Default to 15 seconds
 let autoRefreshTimer = null;
 let currentEvidenceType = null;
-let currentPlayingAudio = null;
-let photosCache = {};
-let audioCache = {};
+let currentlyPlayingAudio = null;
+let currentlyPlayingAudioElement = null;
 
 /************** EVIDENCE SUBMENU FUNCTIONS **************/
 function openEvidenceSubmenu() {
@@ -1437,7 +1496,12 @@ function openEvidenceSheet(type) {
   title.textContent = type === 'photos' ? 'Photos' : 'Audio Recordings';
   
   // Show loading state
-  content.innerHTML = ``;
+  content.innerHTML = `
+    <div class="loading-state">
+      <div class="loading-spinner" style="margin: 0 auto 16px;"></div>
+      <div>Loading ${type}...</div>
+    </div>
+  `;
   
   // Open sheet
   sheet.classList.add('open');
@@ -1460,13 +1524,14 @@ function goBackToEvidenceOptions() {
 function closeEvidenceSheet() {
   document.getElementById('evidenceSheet').classList.remove('open');
   // Stop audio if playing
-  if (currentPlayingAudio) {
-    currentPlayingAudio.pause();
-    currentPlayingAudio = null;
+  if (currentlyPlayingAudioElement) {
+    currentlyPlayingAudioElement.pause();
+    currentlyPlayingAudioElement = null;
+    currentlyPlayingAudio = null;
   }
 }
 
-/************** PHOTOS FUNCTIONS **************/
+/************** PHOTOS FUNCTIONS - SIMPLIFIED LIKE DESKTOP **************/
 async function loadPhotos() {
   const uid = getUserId();
   if (!uid) {
@@ -1477,13 +1542,6 @@ async function loadPhotos() {
   const content = document.getElementById('evidenceContent');
   
   try {
-    // Check cache first
-    const cacheKey = `photos_${uid}`;
-    if (photosCache[cacheKey]) {
-      renderPhotos(photosCache[cacheKey]);
-      return;
-    }
-    
     // Fetch from API
     const url = `${PHOTOS_API_URL}?userId=${encodeURIComponent(uid)}&page=1&pageSize=20`;
     const response = await fetch(url);
@@ -1508,10 +1566,7 @@ async function loadPhotos() {
       return;
     }
     
-    // Cache results
-    photosCache[cacheKey] = payload.photos;
-    
-    // Render photos
+    // Render photos grid
     renderPhotos(payload.photos);
     
   } catch (error) {
@@ -1523,16 +1578,25 @@ async function loadPhotos() {
 function renderPhotos(photos) {
   const content = document.getElementById('evidenceContent');
   
+  if (!photos || photos.length === 0) {
+    content.innerHTML = `
+      <div class="empty-state">
+        <div style="font-size: 32px; margin-bottom: 12px;">📷</div>
+        <div>No photos available</div>
+      </div>
+    `;
+    return;
+  }
+  
   let html = '<div class="evidence-grid">';
   
   photos.forEach((photo, index) => {
     const time = photo.loggedAt ? new Date(photo.loggedAt).toLocaleString() : 'Unknown time';
-    const thumbnail = photo.thumbnailUrl || photo.url || '';
-    const fullImage = photo.url || thumbnail;
+    const viewUrl = photo.viewUrl || photo.url || '';
     
     html += `
-      <div class="photo-item" onclick="openPhotoViewer('${fullImage}', '${time}')">
-        <img src="${thumbnail || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoGVpdGg9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNGM0Y0RjYiLz48cGF0aCBkPSJNNzUgNTBDNzUgNjMuODA3NiA4Ni4xOTI0IDc1IDEwMCA3NUMxMTMuODA3NiA3NSAxMjUgNjMuODA3NiAxMjUgNTBDMTI1IDM2LjE5MjQgMTEzLjgwNzYgMjUgMTAwIDI1Qzg2LjE5MjQgMjUgNzUgMzYuMTkyNCA3NSA1MFoiIGZpbGw9IiNEOEQ5REIiLz48cGF0aCBkPSJNNTAgMTAwSDE1MFYxMjVINTBWMTAwWiIgZmlsbD0iI0Q4RDlEQiIvPjwvc3ZnPg=='}" 
+      <div class="photo-item" onclick="openPhotoViewer('${viewUrl}', '${time}')">
+        <img src="${viewUrl}" 
              alt="Photo ${index + 1}" 
              class="photo-thumb"
              onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNGM0Y0RjYiLz48cGF0aCBkPSJNNzUgNTBDNzUgNjMuODA3NiA4Ni4xOTI0IDc1IDEwMCA3NUMxMTMuODA3NiA3NSAxMjUgNjMuODA3NiAxMjUgNTBDMTI1IDM2LjE5MjQgMTEzLjgwNzYgMjUgMTAwIDI1Qzg2LjE5MjQgMjUgNzUgMzYuMTkyNCA3NSA1MFoiIGZpbGw9IiNEOEQ5REIiLz48cGF0aCBkPSJNNTAgMTAwSDE1MFYxMjVINTBWMTAwWiIgZmlsbD0iI0Q4RDlEQiIvPjwvc3ZnPg=='">
@@ -1547,6 +1611,7 @@ function renderPhotos(photos) {
   content.innerHTML = html;
 }
 
+/************** PHOTO VIEWER - SIMPLIFIED **************/
 function openPhotoViewer(imageUrl, title) {
   const viewer = document.getElementById('photoViewer');
   const container = document.getElementById('viewerImageContainer');
@@ -1554,22 +1619,30 @@ function openPhotoViewer(imageUrl, title) {
   
   titleEl.textContent = title || 'Photo';
   
-  // Show loading
+  // Clear container and show loading
   container.innerHTML = '<div class="loading-spinner" style="margin: auto;"></div>';
   
+  // Create image with simple error handling
   const img = new Image();
   img.onload = function() {
     container.innerHTML = '';
     container.appendChild(img);
+    img.style.maxWidth = '100%';
+    img.style.maxHeight = '100%';
+    img.style.objectFit = 'contain';
+    img.style.borderRadius = '8px';
   };
-  img.onerror = function() {
-    container.innerHTML = '<div style="color: white; text-align: center;">Failed to load image</div>';
-  };
-  img.src = imageUrl;
-  img.style.maxWidth = '100%';
-  img.style.maxHeight = '100%';
-  img.style.objectFit = 'contain';
   
+  img.onerror = function() {
+    container.innerHTML = `
+      <div style="color: white; text-align: center; padding: 20px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">❌</div>
+        <div>Failed to load image</div>
+      </div>
+    `;
+  };
+  
+  img.src = imageUrl;
   viewer.classList.add('active');
 }
 
@@ -1577,7 +1650,7 @@ function closePhotoViewer() {
   document.getElementById('photoViewer').classList.remove('active');
 }
 
-/************** AUDIO FUNCTIONS **************/
+/************** AUDIO FUNCTIONS - SIMPLIFIED LIKE DESKTOP **************/
 async function loadAudio() {
   const uid = getUserId();
   if (!uid) {
@@ -1588,13 +1661,6 @@ async function loadAudio() {
   const content = document.getElementById('evidenceContent');
   
   try {
-    // Check cache first
-    const cacheKey = `audio_${uid}`;
-    if (audioCache[cacheKey]) {
-      renderAudio(audioCache[cacheKey]);
-      return;
-    }
-    
     // Fetch from API
     const url = `${AUDIO_API_URL}?userId=${encodeURIComponent(uid)}&page=1&pageSize=20`;
     const response = await fetch(url);
@@ -1619,10 +1685,7 @@ async function loadAudio() {
       return;
     }
     
-    // Cache results
-    audioCache[cacheKey] = payload.audio;
-    
-    // Render audio
+    // Render audio list
     renderAudio(payload.audio);
     
   } catch (error) {
@@ -1634,25 +1697,33 @@ async function loadAudio() {
 function renderAudio(audioList) {
   const content = document.getElementById('evidenceContent');
   
+  if (!audioList || audioList.length === 0) {
+    content.innerHTML = `
+      <div class="empty-state">
+        <div style="font-size: 32px; margin-bottom: 12px;">🎤</div>
+        <div>No audio recordings available</div>
+      </div>
+    `;
+    return;
+  }
+  
   let html = '';
   
   audioList.forEach((audio, index) => {
     const time = audio.loggedAt ? new Date(audio.loggedAt).toLocaleString() : 'Unknown time';
-    const audioUrl = audio.url || '';
-    const duration = audio.duration ? formatDuration(audio.duration) : 'Unknown';
+    const playUrl = audio.playUrl || audio.url || '';
     
     html += `
-      <div class="audio-item" id="audioItem${index}">
-        <button class="audio-play-btn" onclick="toggleAudioPlayback(${index}, '${audioUrl}')">
+      <div class="audio-item" onclick="playAudioItem('${playUrl}', ${index})" id="audioItem${index}">
+        <div class="media-thumbnail audio">
           ▶
-        </button>
-        <div class="audio-info">
-          <div class="audio-time">${time}</div>
-          <div class="audio-duration">Duration: ${duration}</div>
-          <audio class="audio-player" controls onended="onAudioEnded(${index})">
-            <source src="${audioUrl}" type="audio/mpeg">
-            Your browser does not support the audio element.
-          </audio>
+        </div>
+        <div class="media-info">
+          <div class="media-name">Audio Recording ${index + 1}</div>
+          <div class="media-time">${time}</div>
+        </div>
+        <div class="media-action" id="audioAction${index}">
+          ▶
         </div>
       </div>
     `;
@@ -1661,52 +1732,73 @@ function renderAudio(audioList) {
   content.innerHTML = html;
 }
 
-function toggleAudioPlayback(index, audioUrl) {
-  const audioItem = document.getElementById(`audioItem${index}`);
-  const audioPlayer = audioItem.querySelector('.audio-player');
-  const playBtn = audioItem.querySelector('.audio-play-btn');
-  
+// Simple audio playback function
+function playAudioItem(url, index) {
   // Stop currently playing audio
-  if (currentPlayingAudio && currentPlayingAudio !== audioPlayer) {
-    currentPlayingAudio.pause();
-    const prevItem = currentPlayingAudio.closest('.audio-item');
-    if (prevItem) {
-      prevItem.classList.remove('playing');
-      const prevBtn = prevItem.querySelector('.audio-play-btn');
-      if (prevBtn) prevBtn.textContent = '▶';
+  if (currentlyPlayingAudioElement) {
+    currentlyPlayingAudioElement.pause();
+    
+    // Reset previous playing item
+    if (currentlyPlayingAudio !== null) {
+      const prevAction = document.getElementById(`audioAction${currentlyPlayingAudio}`);
+      const prevItem = document.getElementById(`audioItem${currentlyPlayingAudio}`);
+      if (prevAction) prevAction.textContent = '▶';
+      if (prevItem) prevItem.classList.remove('playing');
     }
   }
   
-  if (audioPlayer.paused) {
-    // Play audio
-    audioPlayer.play();
-    audioItem.classList.add('playing');
-    playBtn.textContent = '⏸';
-    currentPlayingAudio = audioPlayer;
-  } else {
-    // Pause audio
-    audioPlayer.pause();
-    audioItem.classList.remove('playing');
-    playBtn.textContent = '▶';
-    currentPlayingAudio = null;
+  // If clicking the same item that's playing, stop it
+  if (currentlyPlayingAudio === index && currentlyPlayingAudioElement) {
+    currentlyPlayingAudioElement.pause();
+    currentlyPlayingAudioElement = null;
+    currentlyPlayingAudio = null;
+    
+    const action = document.getElementById(`audioAction${index}`);
+    const item = document.getElementById(`audioItem${index}`);
+    if (action) action.textContent = '▶';
+    if (item) item.classList.remove('playing');
+    return;
   }
-}
-
-function onAudioEnded(index) {
-  const audioItem = document.getElementById(`audioItem${index}`);
-  if (audioItem) {
-    audioItem.classList.remove('playing');
-    const playBtn = audioItem.querySelector('.audio-play-btn');
-    if (playBtn) playBtn.textContent = '▶';
-  }
-  currentPlayingAudio = null;
-}
-
-function formatDuration(seconds) {
-  if (!seconds) return '0:00';
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
+  
+  // Create new audio element
+  const audio = new Audio();
+  audio.src = url;
+  audio.preload = "metadata";
+  
+  // Update UI to show playing state
+  const action = document.getElementById(`audioAction${index}`);
+  const item = document.getElementById(`audioItem${index}`);
+  if (action) action.textContent = '⏸';
+  if (item) item.classList.add('playing');
+  
+  // Play audio
+  audio.play().catch(error => {
+    console.error('Error playing audio:', error);
+    alert('Unable to play audio. Please check your connection.');
+    if (action) action.textContent = '▶';
+    if (item) item.classList.remove('playing');
+  });
+  
+  // Handle audio end
+  audio.onended = function() {
+    if (action) action.textContent = '▶';
+    if (item) item.classList.remove('playing');
+    currentlyPlayingAudioElement = null;
+    currentlyPlayingAudio = null;
+  };
+  
+  // Handle audio error
+  audio.onerror = function() {
+    if (action) action.textContent = '▶';
+    if (item) item.classList.remove('playing');
+    currentlyPlayingAudioElement = null;
+    currentlyPlayingAudio = null;
+    alert('Error loading audio file.');
+  };
+  
+  // Store references
+  currentlyPlayingAudioElement = audio;
+  currentlyPlayingAudio = index;
 }
 
 function showEvidenceError(message) {
@@ -1736,8 +1828,8 @@ function initStickyButtons() {
       }
     });
   }, {
-    threshold: 0.1, // Trigger when 10% of element is visible
-    rootMargin: '0px 0px -50px 0px' // Add bottom margin
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
   });
   
   // Start observing the original action bar
@@ -2376,8 +2468,7 @@ window.goBackToEvidenceOptions = goBackToEvidenceOptions;
 window.closeEvidenceSheet = closeEvidenceSheet;
 window.openPhotoViewer = openPhotoViewer;
 window.closePhotoViewer = closePhotoViewer;
-window.toggleAudioPlayback = toggleAudioPlayback;
-window.onAudioEnded = onAudioEnded;
+window.playAudioItem = playAudioItem;
 </script>
 </body>
 </html>
