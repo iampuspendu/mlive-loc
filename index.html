@@ -1245,12 +1245,17 @@
 
 <script>
 /************** CONFIG **************/
-const API_URL = "https://jwki58wsv8.execute-api.ap-south-1.amazonaws.com/prod/location";
-const HISTORY_API_URL = "https://jwki58wsv8.execute-api.ap-south-1.amazonaws.com/prod/location/history";
-const PHOTOS_API_URL = "https://jwki58wsv8.execute-api.ap-south-1.amazonaws.com/prod/media/photos";
-const AUDIO_API_URL = "https://jwki58wsv8.execute-api.ap-south-1.amazonaws.com/prod/media/audio";
-const DESKTOP_SITE_URL = "https://track.themidb.workers.dev/";
-const UNAVAIL = "–";
+/*const API_URL = 'https://jwki58wsv8.execute-api.ap-south-1.amazonaws.com/prod/location';
+    const HISTORY_API_URL = 'https://jwki58wsv8.execute-api.ap-south-1.amazonaws.com/prod/location/history';
+    const PHOTOS_API_URL = 'https://jwki58wsv8.execute-api.ap-south-1.amazonaws.com/prod/media/photos';
+    const AUDIO_API_URL = 'https://jwki58wsv8.execute-api.ap-south-1.amazonaws.com/prod/media/audio';
+    const WORKER_URL = 'https://track.themidb.workers.dev';*/
+
+    API_URL = 'https://wss-api.themidb.workers.dev/location';
+    const HISTORY_API_URL = 'https://wss-api.themidb.workers.dev/location/history';
+    const PHOTOS_API_URL = 'https://wss-api.themidb.workers.dev/media/photos';
+    const AUDIO_API_URL = 'https://wss-api.themidb.workers.dev/media/audio';
+    const WORKER_URL = 'https://track.themidb.workers.dev';
 
 /************** DEVICE DETECTION **************/
 function isMobileDevice() {
